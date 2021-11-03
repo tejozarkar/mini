@@ -3,28 +3,46 @@ import VoxeetSDK from '@voxeet/voxeet-web-sdk';
 import React, { useEffect, useState } from 'react'
 import { useHistory } from 'react-router';
 import { useAuth } from '../context/AuthContext'
+import firebase from '../service/firebase';
+import { getDatabase, ref, set, onValue } from 'firebase/database';
 
 const Dashboard = () => {
     const { currentUser, logout } = useAuth();
     const history = useHistory();
-
+    const [mainConferenceRef, setMainConferenceRef] = useState();
     const [conferenceName, setConferenceName] = useState('');
+    const [miniConferences, setMiniConferences] = useState([]);
+    const [participants, setParticipants] = useState([]);
 
     useEffect(() => {
+        participants.forEach(participant => {
+            console.log(participant.info);
+            const confRef = ref(getDatabase(firebase), mainConferenceRef.id + '/participants/' + participant.info.externalId);
+            const obj = {
+                inviteId: 'sampleId'
+            };
+
+            set(confRef, obj);
+        });
+    }, [participants, mainConferenceRef])
+    useEffect(() => {
+        console.log(currentUser.uid);
+        VoxeetSDK.session.open({ name: currentUser.email, externalId: currentUser.uid })
         VoxeetSDK.conference.on('streamAdded', (participant, stream) => {
             if (stream.type === 'ScreenShare') return;
-            addParticipantNode(participant);
+            setParticipants([...participants, participant]);
             if (stream.getVideoTracks().length) {
                 addVideoNode(participant, stream);
             }
         })
         VoxeetSDK.conference.on('streamUpdated', (participant, stream) => {
             if (stream.type === 'ScreenShare') return;
-            addParticipantNode(participant);
+            setParticipants([...participants, participant]);
             if (stream.getVideoTracks().length) {
                 addVideoNode(participant, stream);
             }
         });
+        return VoxeetSDK.session.close();
     }, []);
 
 
@@ -37,13 +55,57 @@ const Dashboard = () => {
         }
     }
 
-    const handleCreateConference = async () => {
-        await VoxeetSDK.session.open({ name: currentUser.email })
-        VoxeetSDK.conference.create({ alias: conferenceName })
+    const handleCreateConference = () => {
+        const conferenceParams = {
+            ttl: 20000
+        }
+        VoxeetSDK.conference.create({ alias: conferenceName, params: conferenceParams })
             .then(conference => {
-                VoxeetSDK.conference.join(conference, {})
-                    .then()
+                if (!mainConferenceRef) {
+                    const confRef = ref(getDatabase(firebase), conference.id);
+                    const confObj = {
+                        alias: conference.alias
+                    }
+                    set(confRef, confObj);
+                    setMainConferenceRef(conference);
+                    const tref = ref(getDatabase(firebase), conference.id + '/participants/' + currentUser.uid + '/inviteId');
+                    onValue(tref, (snapshot) => {
+                        alert(snapshot.val());
+                    });
+                }
+                else {
+                    // add miniConferences to firebase
+                    setMiniConferences([...miniConferences, conference]);
+                }
             })
+    }
+
+    const handleJoinConference = (conferenceId) => {
+        if (!conferenceId) {
+            VoxeetSDK.conference.join(mainConferenceRef, {})
+                .then()
+                .catch(e => console.log(e))
+            return;
+        }
+        if (conferenceId) {
+            VoxeetSDK.conference.leave(mainConferenceRef, {}).then(
+                () => {
+                    VoxeetSDK.conference.fetch(conferenceId)
+                        .then(conf => {
+                            console.log(conf);
+                            VoxeetSDK.conference.join(conf, {})
+                                .then(
+                                )
+                                .catch(e => console.log(e))
+                        }).catch(e => console.log(e));
+                }
+
+            );
+            console.log(conferenceId);
+
+
+        }
+
     }
 
     const handleStartVideo = () => {
@@ -52,10 +114,8 @@ const Dashboard = () => {
     }
 
     const addVideoNode = (participant, stream) => {
-        console.log('adding video node)')
         let videoNode = document.getElementById('video-' + participant.id);
         if (!videoNode) {
-            console.log('createing video nodee')
             videoNode = document.createElement('video');
             videoNode.setAttribute('id', 'video-' + participant.id);
             videoNode.setAttribute('height', 240);
@@ -70,15 +130,10 @@ const Dashboard = () => {
         navigator.attachMediaStream(videoNode, stream);
     }
 
-    const addParticipantNode = (participant) => {
-        let participantNode = document.getElementById('participant-' + participant.info.name);
-        if (!participantNode) {
-            const participantContainer = document.getElementById('participant-list');
-            participantNode = document.createElement('li');
-            participantNode.innerText = participant.info.name;
-            participantNode.setAttribute('id', 'participant-' + participant.info.name);
-            participantContainer.append(participantNode);
-        }
+    const handleInvite = (participant) => {
+        const confRef = ref(getDatabase(firebase), mainConferenceRef.id + '/participants/' + participant.info.externalId + '/inviteId');
+
+        set(confRef, 'secondid');
     }
 
     return (
@@ -88,10 +143,14 @@ const Dashboard = () => {
             <input type="text" onChange={(e) => setConferenceName(e.target.value)}></input>
             <Button className="btn btn-primary" onClick={handleCreateConference}>Create Conference</Button>
             <Button className="btn btn-success" onClick={handleStartVideo}>Start Video</Button>
+            <Button className="btn btn-success" onClick={() => handleJoinConference()}>Join Conference</Button>
             <div id="video-container"></div>
             <div id='participant-list'>
-
+                {participants.map(participant => <li key={participant.info.name} onClick={() => handleInvite(participant)}>{participant.info.name}</li>)}
             </div>
+            <ul>
+                {miniConferences.map(conference => <li key={conference} onClick={() => handleJoinConference(conference.id)}>{conference.alias}</li>)}
+            </ul>
         </>
     )
 }

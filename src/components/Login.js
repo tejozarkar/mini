@@ -1,4 +1,5 @@
 import Button from '@restart/ui/esm/Button'
+import VoxeetSDK from '@voxeet/voxeet-web-sdk';
 import React, { useRef } from 'react'
 import { Form } from 'react-bootstrap'
 import { useHistory } from 'react-router-dom';
@@ -12,6 +13,7 @@ const Login = () => {
     const handleLogin = async () => {
         try {
             await login(emailRef.current.value, passwordRef.current.value);
+            VoxeetSDK.session.open({ name: emailRef.current.value })
             history.push('/');
         } catch {
 

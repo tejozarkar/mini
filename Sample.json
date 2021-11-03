@@ -1,0 +1,17 @@
+{
+    "conferenceId": {
+        "participants": {
+            "participantId": {
+                "role": "",
+                "label": "",
+                "inviteConferenceId": ""
+            }
+        },
+        "miniConferences": [
+            {
+                "alias": "name",
+                "conferenceId": "id"
+            }
+        ]
+    }
+}

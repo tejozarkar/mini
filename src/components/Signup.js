@@ -7,9 +7,10 @@ import { useAuth } from '../context/AuthContext';
 const Signup = () => {
     const emailRef = useRef();
     const passwordRef = useRef();
+    const displayNameRef = useRef();
     const confirmPasswordRef = useRef();
     const [error, setError] = useState('');
-    const { signup } = useAuth();
+    const { signup, updateDisplayName } = useAuth();
     const history = useHistory();
 
     const handleSubmit = async (e) => {
@@ -22,6 +23,7 @@ const Signup = () => {
         try {
             setError('');
             await signup(emailRef.current.value, passwordRef.current.value);
+            await updateDisplayName(displayNameRef.current.value);
             history.push('/');
 
         } catch {
@@ -34,15 +36,19 @@ const Signup = () => {
             {error && <Alert>{error}</Alert>}
             <Form onSubmit={handleSubmit}>
                 <Form.Group>
-                    <Form.Label>Email</Form.Label>
+                    <Form.Label>Display Name *</Form.Label>
+                    <Form.Control type="text" ref={displayNameRef} required></Form.Control>
+                </Form.Group>
+                <Form.Group>
+                    <Form.Label>Email *</Form.Label>
                     <Form.Control type="email" ref={emailRef} required></Form.Control>
                 </Form.Group>
                 <Form.Group>
-                    <Form.Label>Password</Form.Label>
+                    <Form.Label>Password *</Form.Label>
                     <Form.Control type="password" ref={passwordRef} required></Form.Control>
                 </Form.Group>
                 <Form.Group>
-                    <Form.Label>Confirm password</Form.Label>
+                    <Form.Label>Confirm password *</Form.Label>
                     <Form.Control type="password" ref={confirmPasswordRef} required></Form.Control>
                 </Form.Group>
                 <Button type="submit" className="btn btn-primary">Submit</Button>

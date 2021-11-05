@@ -1,60 +1,66 @@
-import Button from '@restart/ui/esm/Button'
-import React, { useRef, useState } from 'react'
-import { Alert, Form } from 'react-bootstrap'
-import { useHistory } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { Alert, Button, Form, Input } from "antd";
+import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import './../styles/authentication.scss';
 
 const Signup = () => {
-    const emailRef = useRef();
-    const passwordRef = useRef();
-    const displayNameRef = useRef();
-    const confirmPasswordRef = useRef();
-    const [error, setError] = useState('');
+
+    const [error, setError] = useState("");
     const { signup, updateDisplayName } = useAuth();
     const history = useHistory();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        if (passwordRef.current.value !== confirmPasswordRef.current.value) {
-            setError('Passwords do not match!');
+    const onFinish = async (values) => {
+        if (values['password'] !== values['confirmPassword']) {
+            setError("Passwords do not match!");
             return;
         }
         try {
-            setError('');
-            await signup(emailRef.current.value, passwordRef.current.value);
-            await updateDisplayName(displayNameRef.current.value);
-            history.push('/');
-
+            setError("");
+            await signup(values['email'], values['password']);
+            await updateDisplayName(values['displayName']);
+            history.push("/");
         } catch {
-            setError('Failed to create an account');
+            setError("Failed to create an account");
         }
+    };
+
+    const gotoLogin = () => {
+        history.push('/login');
     }
     return (
-        <>
-            <h3>Signup</h3>
-            {error && <Alert>{error}</Alert>}
-            <Form onSubmit={handleSubmit}>
-                <Form.Group>
-                    <Form.Label>Display Name *</Form.Label>
-                    <Form.Control type="text" ref={displayNameRef} required></Form.Control>
-                </Form.Group>
-                <Form.Group>
-                    <Form.Label>Email *</Form.Label>
-                    <Form.Control type="email" ref={emailRef} required></Form.Control>
-                </Form.Group>
-                <Form.Group>
-                    <Form.Label>Password *</Form.Label>
-                    <Form.Control type="password" ref={passwordRef} required></Form.Control>
-                </Form.Group>
-                <Form.Group>
-                    <Form.Label>Confirm password *</Form.Label>
-                    <Form.Control type="password" ref={confirmPasswordRef} required></Form.Control>
-                </Form.Group>
-                <Button type="submit" className="btn btn-primary">Submit</Button>
-            </Form>
-        </>
-    )
-}
+        <div className="auth-wrapper">
+            <div className="form-wrapper">
+                <h3> Signup </h3>
+                {error && <Alert message={error} type="error" />}
+                <Form name="basic" layout="vertical" onFinish={onFinish}
+                    autoComplete="off">
+                    <Form.Item label="Display Name" name="displayName"
+                        rules={[{ required: true, message: "Please input your display name!" }]}>
+                        <Input />
+                    </Form.Item>
+                    <Form.Item label="Email" name="email"
+                        rules={[{ required: true, message: "Please input your email!" }]}>
+                        <Input />
+                    </Form.Item>
+                    <Form.Item label="Password" name="password"
+                        rules={[{ required: true, message: "Please input your password!" }]}>
+                        <Input.Password />
+                    </Form.Item>
+                    <Form.Item label="Confirm Password" name="confirmPassword"
+                        rules={[{ required: true, message: "Please input your password again!" }]}>
+                        <Input.Password />
+                    </Form.Item>
+                    <Form.Item>
+                        <Button style={{ width: '100%' }} size="large" type="primary" htmlType="submit">
+                            Submit
+                        </Button>
+                        <Button style={{ width: '100%' }} type="link" onClick={gotoLogin}>Already have an account? Login</Button>
+                    </Form.Item>
+                </Form>
+            </div>
+        </div>
+    );
+};
 
-export default Signup
+export default Signup;

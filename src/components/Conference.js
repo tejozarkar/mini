@@ -1,15 +1,21 @@
-import Button from '@restart/ui/esm/Button';
 import VoxeetSDK from '@voxeet/voxeet-web-sdk';
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import ParticipantCard from './ParticipantCard';
+import './../styles/conference.scss';
+import { Button, Input, Modal } from 'antd';
+import MiniConference from './MiniConference';
 
 const Conference = () => {
     const { id } = useParams();
     const { currentUser } = useAuth();
     const [participants, setParticipants] = useState({});
-
+    const [currentConference, setCurrentConference] = useState();
+    const [mainConference, setMainConference] = useState();
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [miniName, setMiniName] = useState();
+    const [miniList, setMiniList] = useState([]);
     useEffect(() => {
         VoxeetSDK.session.open({ name: currentUser.displayName, externalId: currentUser.uid }).then().catch(e => console.log(e))
             .finally(() => {
@@ -17,8 +23,9 @@ const Conference = () => {
                     .then(conference => {
                         VoxeetSDK.conference.join(conference, {})
                             .then(() => {
-                                console.log('Joined')
-                            }).catch(e => console.log(e));
+                                setCurrentConference(conference);
+                                setMainConference(conference);
+                            }).catch();
                     }).catch();
             });
     }, [currentUser, id]);
@@ -64,10 +71,46 @@ const Conference = () => {
         VoxeetSDK.conference.startVideo(VoxeetSDK.session.participant).then();
     }
 
+    const showModal = () => {
+        setIsModalVisible(true);
+    };
+
+    const handleOk = () => {
+        setIsModalVisible(false);
+        const conferenceParams = {
+            ttl: 20000
+        }
+        VoxeetSDK.conference.create({ alias: 'mini|' + miniName + '|' + mainConference.id, params: conferenceParams })
+            .then(minispace => {
+                setMiniList(miniList => [...miniList, minispace]);
+            });
+    };
+
+    const handleCancel = () => {
+        setIsModalVisible(false);
+    };
+
+    const joinMini = (mini) => {
+        VoxeetSDK.conference.join(mini, {})
+            .then(() => {
+                setCurrentConference(mini);
+            }).catch(e => console.log(e));
+    }
+
     return (
         <div>
-            <Button className="btn btn-primary" onClick={handleStartVideo}>Start Video</Button>
-            {Object.keys(participants).map(id => participants[id].active && <ParticipantCard participant={participants[id]}></ParticipantCard>)}
+            {currentConference && currentConference.alias.split('|')[1]}
+            <Button type="primary" onClick={handleStartVideo}>Start Video</Button>
+            <div className="participants-wrap d-flex">
+                {Object.keys(participants).map(id => participants[id].active && <ParticipantCard key={id} participant={participants[id]}></ParticipantCard>)}
+            </div>
+            <Button type="primary" onClick={showModal}>
+                Open Modal
+            </Button>
+            <Modal title="Create MiniSpace" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
+                <Input size="large" placeholder="Enter name" onChange={e => setMiniName(e.target.value)}></Input>
+            </Modal>
+            {miniList.map((mini) => <MiniConference key={mini.alias} mini={mini} joinMini={() => joinMini(mini)}></MiniConference>)}
         </div>
     )
 }

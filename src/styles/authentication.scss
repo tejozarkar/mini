@@ -1,0 +1,15 @@
+@import './variables.scss';
+
+.auth-wrapper{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
+   .form-wrapper{
+    padding: 2rem;
+    width: 30%;
+    background-color: $primary-color;
+   
+   }
+}

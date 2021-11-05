@@ -6,6 +6,7 @@ import PrivateRoute from '../util/PrivateRoute';
 import Conference from './Conference';
 import Home from './Home';
 import Login from './Login';
+import MiniConference from './MiniConference';
 import Signup from './Signup';
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
           <Switch>
             <PrivateRoute exact path='/' component={Home} />
             <PrivateRoute exact path='/conference/:id' component={Conference} />
+            <PrivateRoute exact path='/conference/:id/mini/:mId' component={MiniConference} />
             <Route path='/login' component={Login} />
             <Route path='/signup' component={Signup} />
           </Switch>

@@ -1,0 +1,68 @@
+@import "~antd/dist/antd.css";
+@import "./variables.scss";
+
+body {
+    background: $secondary-color;
+    color: white;
+}
+
+.ant-modal {
+    color: white !important;
+}
+.ant-modal-title {
+    color: white !important;
+}
+.ant-modal-header {
+    background-color: $primary-color !important;
+    border-bottom: 1px solid $secondary-color !important;
+}
+.ant-modal-footer {
+    background-color: $primary-color !important;
+    border-top: 1px solid $secondary-color;
+}
+.ant-modal-body {
+    background-color: $primary-color !important;
+}
+
+.ant-input {
+    background: $primary-color !important;
+    border: 1px solid white;
+    caret-color: white;
+    color: white;
+    &::placeholder {
+        color: #888 !important;
+    }
+}
+
+.ant-btn {
+    background-color: $primary-color;
+    color: white;
+    border: $secondary-color;
+    &:hover {
+        background: #333;
+        color: white;
+    }
+    &.ant-btn-primary {
+        background-color: #3c415c;
+    }
+}
+
+.ant-input-password {
+    border: 1px solid white;
+    background: $primary-color !important;
+    .ant-input-suffix .anticon{
+        color: white!important;
+    }
+}
+
+.ant-form-item-label label{
+    color: white!important;
+}
+
+h3{
+    color: white;
+}
+
+a{
+    color: white !important;
+}

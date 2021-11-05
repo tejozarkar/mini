@@ -1,11 +1,11 @@
 import React from 'react'
-import { Card } from 'react-bootstrap'
+import './../styles/participant.scss';
 
 const ParticipantCard = ({ participant }) => {
     return (
-        <Card id={`video-container-${participant.id}`}>
+        <div className="participant-card p-3 flex" id={`video-container-${participant.id}`}>
             <p>{participant.name}</p>
-        </Card>
+        </div>
     )
 }
 

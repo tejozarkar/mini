@@ -1,40 +1,50 @@
-import Button from '@restart/ui/esm/Button'
 import VoxeetSDK from '@voxeet/voxeet-web-sdk';
-import React, { useRef } from 'react'
-import { Form } from 'react-bootstrap'
+import React from 'react'
+import { Button, Form, Input } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import './../styles/authentication.scss';
 
 const Login = () => {
-    const emailRef = useRef();
-    const passwordRef = useRef();
+
     const { login } = useAuth();
     const history = useHistory();
-    const handleLogin = async () => {
+    const handleLogin = async (values) => {
         try {
-            await login(emailRef.current.value, passwordRef.current.value);
-            VoxeetSDK.session.open({ name: emailRef.current.value })
-            history.push('/');
+            await login(values['email'], values['password']);
+            VoxeetSDK.session.open({ name: values['email'] })
+            history.goBack();
         } catch {
 
         }
     }
-    return (
-        <>
-            <h3> Login </h3>
-            <Form>
-                <Form.Group>
-                    <Form.Label> Email</Form.Label>
-                    <Form.Control type='email' ref={emailRef} />
-                </Form.Group>
-                <Form.Group>
-                    <Form.Label> Password</Form.Label>
-                    <Form.Control type='password' ref={passwordRef} />
-                </Form.Group>
-                <Button className='btn btn-primary' onClick={handleLogin}>Login</Button>
 
-            </Form>
-        </>
+    const gotoSignup = () => {
+        history.push('/signup');
+    }
+    return (
+        <div className="auth-wrapper">
+            <div className="form-wrapper">
+                <h3> Login </h3>
+                <Form name="basic" layout="vertical" onFinish={handleLogin}
+                    autoComplete="off">
+                    <Form.Item label="Email" name="email"
+                        rules={[{ required: true, message: "Please input your email!" }]}>
+                        <Input />
+                    </Form.Item>
+                    <Form.Item label="Password" name="password"
+                        rules={[{ required: true, message: "Please input your password!" }]}>
+                        <Input.Password />
+                    </Form.Item>
+                    <Form.Item>
+                        <Button style={{ width: '100%' }} type="primary" htmlType="submit">
+                            Submit
+                        </Button>
+                        <Button style={{ width: '100%' }} type="link" onClick={gotoSignup}>Don't have an account? Signup</Button>
+                    </Form.Item>
+                </Form>
+            </div>
+        </div>
     )
 }
 

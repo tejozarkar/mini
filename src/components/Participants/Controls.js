@@ -2,16 +2,21 @@ import { AudioOutlined, PhoneOutlined, VideoCameraOutlined } from '@ant-design/i
 import VoxeetSDK from '@voxeet/voxeet-web-sdk';
 import { Button } from 'antd';
 import React, { useState } from 'react';
+import { useHistory } from 'react-router';
+import { useConference } from '../../context/ConferenceContext';
 import './../../styles/controls.scss';
 
 const Controls = () => {
 
+    const { mainConference } = useConference();
     const [videoEnabled, setVideoEnabled] = useState(false);
     const [microphoneEnabled, setMicrophoneEnabled] = useState(true);
 
+    const history = useHistory();
+
 
     const backToMainConference = () => {
-
+        history.push('/conference/' + mainConference.id);
     }
 
     const handleStartVideo = () => {

@@ -15,25 +15,26 @@ const Conference = () => {
     const history = useHistory();
     const { id, mId } = useParams();
     const { currentUser } = useAuth();
-    const { getConferenceById, joinConference, isAdmin, leaveConference } = useConference();
+    const { getConferenceById, joinConference, isAdmin, leaveConference, mainConference } = useConference();
     const { getInvites, updateInvite } = useDatabase();
     const [currentConference, setCurrentConference] = useState();
-    const [mainConference, setMainConference] = useState();
     const [isMini, setIsMini] = useState(false);
     const [currentId, setCurrentId] = useState();
     const [invites, setInvites] = useState();
 
+    // Receive Invites
     useEffect(() => {
         if (currentUser && mainConference) {
-            getInvites(mainConference.id, (snapshot) => {
+            getInvites(mainConference.id, currentUser.uid, snapshot => {
                 if (snapshot && snapshot.val()) {
                     setInvites(snapshot.val());
                 }
             });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentUser]);
+    }, [currentUser, mainConference]);
 
+    // Send Invite Notification
     useEffect(() => {
         if (invites) {
             Object.keys(invites).forEach(key => {
@@ -44,22 +45,22 @@ const Conference = () => {
             });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [MiniConference, currentUser])
+    }, [MiniConference, currentUser, invites])
 
+
+    // Check is Mini Conference
     useEffect(() => {
         setCurrentId(mId ? mId : id);
         setIsMini(mId ? true : false);
     }, [id, mId]);
 
+    // Join Conference
     useEffect(() => {
         if (currentId) {
             const processConference = async () => {
                 const conference = await getConferenceById(currentId);
-                await joinConference(conference);
+                await joinConference(conference, isMini);
                 setCurrentConference(conference);
-                if (!isMini) {
-                    setMainConference(conference);
-                }
             }
             processConference();
         }
@@ -67,10 +68,9 @@ const Conference = () => {
     }, [currentId]);
 
 
-    const joinMini = (id) => {
-        leaveConference.then(() => {
-            history.push(history.location.pathname + '/mini/' + id);
-        });
+    const joinMini = async (id) => {
+        await leaveConference();
+        history.push(`/conference/${mainConference.id}/mini/${id}`);
     }
 
     const openInviteNotification = (name, id) => {

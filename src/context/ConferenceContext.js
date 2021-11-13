@@ -48,13 +48,15 @@ export const ConferenceProvider = ({ children }) => {
 
     // Find User is Admin
     useEffect(() => {
-        Object.keys(admins).forEach(key => {
-            if (currentUser.uid === key) {
-                setIsAdmin(true);
-            } else {
-                setIsAdmin(false);
-            }
-        });
+        if (currentUser && admins) {
+            Object.keys(admins).forEach(key => {
+                if (currentUser.uid === key) {
+                    setIsAdmin(true);
+                } else {
+                    setIsAdmin(false);
+                }
+            });
+        }
     }, [currentUser, admins]);
 
     // Add remove Current Conference Participants
@@ -64,13 +66,13 @@ export const ConferenceProvider = ({ children }) => {
                 setCurrentParticipants(participants => ({ ...participants, [participant.info.externalId]: { id: participant.info.externalId, name: participant.info.name, active: true } }));
             });
             streamRemoved((participant) => {
-                setCurrentParticipants(participants => ({ ...participants, [participant.info.externalId]: { id: participant.info.externalId, name: participant.info.name, active: true } }));
+                setCurrentParticipants(participants => ({ ...participants, [participant.info.externalId]: { id: participant.info.externalId, name: participant.info.name, active: false } }));
             });
             streamUpdated((participant) => {
                 setCurrentParticipants(participants => ({ ...participants, [participant.info.externalId]: { id: participant.info.externalId, name: participant.info.name, active: true } }));
             });
         }
-    }, [sessionOpened]);
+    }, [sessionOpened, mainConference, currentUser]);
 
     // Count Total Current Participants
     useEffect(() => {
@@ -98,10 +100,12 @@ export const ConferenceProvider = ({ children }) => {
         return VoxeetSDK.conference.fetch(id);
     }
 
-    const joinConference = (conference) => {
+    const joinConference = (conference, isMini = true) => {
         return new Promise((resolve, reject) => {
             VoxeetSDK.conference.join(conference, {}).then(() => {
-                setMainConference(conference);
+                if (!isMini) {
+                    setMainConference(conference);
+                }
                 resolve();
             });
         });

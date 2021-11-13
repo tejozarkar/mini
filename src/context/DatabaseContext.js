@@ -1,7 +1,6 @@
 import React, { useContext } from 'react'
 import { getDatabase, onValue, ref, set, update } from '@firebase/database'
 import firebase from '../service/firebase';
-import { useAuth } from './AuthContext';
 
 const DatabaseContext = React.createContext();
 
@@ -11,7 +10,6 @@ export const useDatabase = () => {
 
 export const DatabaseProvider = ({ children }) => {
 
-    const { currentUser } = useAuth();
 
     const insertMainConference = (conferenceId, conferenceName, user) => {
         set(ref(getDatabase(firebase), conferenceId), {
@@ -27,7 +25,8 @@ export const DatabaseProvider = ({ children }) => {
     const insertParticipant = (conferenceId, user) => {
         update(ref(getDatabase(firebase), conferenceId + '/participants'), {
             [user.uid]: {
-                name: user.displayName
+                name: user.displayName,
+                invites: { status: 'EXPIRED' }
             }
         });
     }
@@ -40,8 +39,8 @@ export const DatabaseProvider = ({ children }) => {
         });
     }
 
-    const getInvites = (conferenceId, callback) => {
-        onValue(ref(getDatabase(firebase), conferenceId + '/participants/' + currentUser.uid + '/invites', callback));
+    const getInvites = (conferenceId, userId, callback) => {
+        onValue(ref(getDatabase(firebase), conferenceId + '/participants/' + userId + '/invites'), callback);
     }
 
     const getAdmins = (conferenceId, callback) => {
@@ -56,10 +55,10 @@ export const DatabaseProvider = ({ children }) => {
         onValue(ref(getDatabase(firebase), conferenceId + '/participants'), callback);
     }
 
-    const inviteUser = (conferenceId, participantId, mini) => {
+    const inviteUser = (conferenceId, participantId, miniId, miniName) => {
         update(ref(getDatabase(firebase), conferenceId + '/participants/' + participantId + '/invites'), {
-            [mini.id]: {
-                name: mini.alias,
+            [miniId]: {
+                name: miniName,
                 status: 'NEW'
             }
         });

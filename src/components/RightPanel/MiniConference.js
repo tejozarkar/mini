@@ -23,16 +23,15 @@ const MiniConference = ({ name, miniId }) => {
         setInviteeIds([...inviteeIds, id]);
     }
 
-    const inviteUsers = (ids, mini) => {
+    const inviteUsers = (ids) => {
         ids.forEach(id => {
-            inviteUser(mainConference.id, id, mini);
+            inviteUser(mainConference.id, id, miniId, name);
         });
     }
 
-    const joinMini = (id) => {
-        leaveConference.then(() => {
-            history.push(history.location.pathname + '/mini/' + id);
-        });
+    const joinMini = async (id) => {
+        await leaveConference();
+        history.push(`/conference/${mainConference.id}/mini/${id}`);
     }
 
     const [showInviteModal, setShowInviteModal] = useState(false);

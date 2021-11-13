@@ -16,7 +16,7 @@ const MiniConferenceTab = () => {
     };
 
     const handleCancel = () => {
-        showCreateMiniModal(false);
+        setShowCreateMiniModal(false);
     };
 
     const handleOk = async () => {
@@ -26,22 +26,21 @@ const MiniConferenceTab = () => {
     };
 
     return (
-        <div>
-            <div className="right-panel p-3">
-                <Button type="success" className="mb-3 float-end mt-3" onClick={handleShowCreateMiniModal}>
-                    + New
-                </Button>
-                <div className="clearfix"></div>
-                <Row gutter={{ xs: 8, sm: 16, md: 16, lg: 16 }}>
-                    {miniList && Object.keys(miniList).map(id =>
-                        <Col span={12}>
-                            <MiniConference key={id} miniId={id} name={miniList[id].name}></MiniConference>
-                        </Col>)}
-                </Row>
-                <Modal title="Create MiniSpace" visible={showCreateMiniModal} onOk={handleOk} onCancel={handleCancel}>
-                    <Input size="large" placeholder="Enter name" onChange={e => setMiniName(e.target.value)}></Input>
-                </Modal>
-            </div>
+        <div className="right-panel p-3">
+            <Button type="success" className="mb-3 float-end mt-3" onClick={handleShowCreateMiniModal}>
+                + New
+            </Button>
+            <div className="clearfix"></div>
+            <Row gutter={{ xs: 8, sm: 16, md: 16, lg: 16 }}>
+                {miniList && Object.keys(miniList).map(id =>
+                    <Col span={12}>
+                        <MiniConference key={id} miniId={id} name={miniList[id].name}></MiniConference>
+                    </Col>
+                )}
+            </Row>
+            <Modal title="Create MiniSpace" visible={showCreateMiniModal} onOk={handleOk} onCancel={handleCancel}>
+                <Input size="large" placeholder="Enter name" onChange={e => setMiniName(e.target.value)}></Input>
+            </Modal>
         </div>
     )
 }

@@ -33,9 +33,11 @@ const ParticipantsWrapper = () => {
             <div className="participants-wrapper p-3">
                 <p className="participants-count d-flex align-items-center"><TeamOutlined /><span style={{ marginLeft: '5px' }}>{totalCurrentParticipants} Participants</span></p>
                 <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-                    <Col span={6}><ParticipantCard key={currentUser.uid} participant={{ id: currentUser.uid, name: 'You', active: true }}></ParticipantCard> </Col>
-                    {Object.keys(currentParticipants).map(id => currentUser.uid !== id && currentParticipants[id].active
-                        && <Col span={6}><ParticipantCard key={id} participant={currentParticipants[id]}></ParticipantCard></Col>)}
+                    <Col span={6}>
+                        <ParticipantCard key={currentUser.uid} participant={{ id: currentUser.uid, name: 'You', active: true }}></ParticipantCard>
+                    </Col>
+                    {Object.keys(currentParticipants).map(id => currentUser.uid !== id && currentParticipants[id].active &&
+                        <Col span={6}><ParticipantCard key={id} participant={currentParticipants[id]}></ParticipantCard></Col>)}
                 </Row>
                 <Controls />
             </div >

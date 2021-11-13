@@ -1,0 +1,9 @@
+@import "./variables.scss";
+.home-wrapper {
+   .create-or-join-wrapper {
+      height: 80vh;
+      width: 40vw;
+      background: $primary-color;
+      border-radius: 10px;
+   }
+}

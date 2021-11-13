@@ -1,0 +1,12 @@
+@import "./variables.scss";
+
+.mini-conference-wrapper {
+   background: $primary-color;
+   border-radius: 10px;
+   .conference-name {
+      color: $primary-btn-color;
+      border-bottom: 2px solid $primary-btn-color;
+      display: inline;
+      padding-bottom: 10px;
+   }
+}

@@ -24,10 +24,12 @@ export const ConferenceProvider = ({ children }) => {
 
     // Open Session
     useEffect(() => {
-        VoxeetSDK.session.open({ name: currentUser.displayName, externalId: currentUser.uid })
-            .then()
-            .catch(e => { })
-            .finally(() => setSessionOpened(true));
+        if (currentUser) {
+            VoxeetSDK.session.open({ name: currentUser.displayName, externalId: currentUser.uid })
+                .then()
+                .catch(e => { })
+                .finally(() => setSessionOpened(true));
+        }
     }, [currentUser]);
 
     // Get Admins | MiniConf | AllParticipants
@@ -146,7 +148,7 @@ export const ConferenceProvider = ({ children }) => {
 
     return (
         <ConferenceContext.Provider value={value}>
-            {sessionOpened && children}
+            {children}
         </ConferenceContext.Provider>
     )
 }

@@ -1,0 +1,33 @@
+@import "./variables.scss";
+
+.tab-buttons {
+   //   background: $primary-color;
+   //   position: relative;
+   .tab-button {
+      position: absolute;
+      border: none;
+      background: $primary-color;
+      color: white;
+      padding: 1em;
+      width: 50%;
+      padding-left: 3em;
+      width: 55%;
+      z-index: 0;
+      &.task-button-1 {
+         left: 0;
+         top: 0;
+         border-radius: 50px 0px 0px 50px;
+      }
+      &.task-button-2 {
+         right: 0;
+         top: 0;
+         border-radius: 0px 50px 50px 0px;
+      }
+      &.active {
+         background: $primary-btn-color;
+         color: black;
+         border-radius: 50px 50px 50px 50px;
+         z-index: 1;
+      }
+   }
+}

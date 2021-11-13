@@ -1,5 +1,5 @@
 import React from 'react'
-import './../styles/participant.scss';
+import './../../styles/participant-card.scss';
 
 const ParticipantCard = ({ participant }) => {
     return (

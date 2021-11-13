@@ -1,19 +1,38 @@
 import { MailOutlined, TeamOutlined, UserAddOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Modal } from 'antd';
 import React, { useState } from 'react'
-import './../styles/mini-conference.scss';
+import { useHistory } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { useConference } from '../../context/ConferenceContext';
+import { useDatabase } from '../../context/DatabaseContext';
+import './../../styles/mini-conference.scss';
 
-const MiniConference = ({ name, participants, currentUser, joinMini, inviteUsers }) => {
+const MiniConference = ({ name, miniId }) => {
 
+    const { currentUser } = useAuth();
+    const { inviteUser } = useDatabase();
+    const { mainConference, currentParticipants, leaveConference } = useConference();
     const [inviteeIds, setInviteeIds] = useState([]);
+    const history = useHistory();
 
     const selectInvitee = (id) => {
         if (inviteeIds.includes(id)) {
             setInviteeIds(inviteeIds.slice(0, inviteeIds.indexOf(id)));
             return;
         }
-
         setInviteeIds([...inviteeIds, id]);
+    }
+
+    const inviteUsers = (ids, mini) => {
+        ids.forEach(id => {
+            inviteUser(mainConference.id, id, mini);
+        });
+    }
+
+    const joinMini = (id) => {
+        leaveConference.then(() => {
+            history.push(history.location.pathname + '/mini/' + id);
+        });
     }
 
     const [showInviteModal, setShowInviteModal] = useState(false);
@@ -26,12 +45,12 @@ const MiniConference = ({ name, participants, currentUser, joinMini, inviteUsers
             </div>
             <div className="d-flex mt-4 justify-content-between align-items-end mb-2">
                 <Button type="success" onClick={() => setShowInviteModal(true)}><MailOutlined />invite</Button>
-                <Button type="primary" onClick={joinMini}> <UserAddOutlined />join</Button>
+                <Button type="primary" onClick={() => joinMini(miniId)}> <UserAddOutlined />join</Button>
             </div>
 
             <Modal title="Invite people" visible={showInviteModal} onCancel={() => setShowInviteModal(false)} onOk={() => { setShowInviteModal(false); inviteUsers(inviteeIds) }}>
-                {Object.keys(participants).length === 1 && <p>No participants</p>}
-                {Object.keys(participants).map(id => id !== currentUser.uid && <Checkbox key={id} onChange={() => selectInvitee(id)}>{participants[id].name}</Checkbox>)}
+                {Object.keys(currentParticipants).length === 1 && <p>No participants</p>}
+                {Object.keys(currentParticipants).map(id => id !== currentUser.uid && <Checkbox key={id} onChange={() => selectInvitee(id)}>{currentParticipants[id].name}</Checkbox>)}
             </Modal>
         </div>
 

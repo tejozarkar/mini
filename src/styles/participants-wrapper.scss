@@ -1,0 +1,12 @@
+@import "./variables.scss";
+
+.conference-wrapper {
+   height: calc(100vh - 85px);
+
+   .participants-wrapper {
+      background: $primary-color;
+      height: 100%;
+      border-radius: 10px;
+      position: relative;
+   }
+}

@@ -2,8 +2,8 @@ import VoxeetSDK from '@voxeet/voxeet-web-sdk';
 import React from 'react'
 import { Button, Form, Input } from 'antd';
 import { useHistory } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import './../styles/authentication.scss';
+import { useAuth } from '../../context/AuthContext';
+import './../../styles/authentication.scss';
 
 const Login = () => {
 

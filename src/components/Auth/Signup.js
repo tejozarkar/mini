@@ -1,8 +1,8 @@
 import { Alert, Button, Form, Input } from "antd";
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import './../styles/authentication.scss';
+import { useAuth } from "../../context/AuthContext";
+import './../../styles/authentication.scss';
 
 const Signup = () => {
 

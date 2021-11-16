@@ -11,7 +11,7 @@ const MiniConference = ({ name, miniId }) => {
 
     const { currentUser } = useAuth();
     const { inviteUser } = useDatabase();
-    const { mainConference, currentParticipants, leaveConference } = useConference();
+    const { mainConferenceId, currentParticipants, leaveConference, miniList } = useConference();
     const [inviteeIds, setInviteeIds] = useState([]);
     const history = useHistory();
 
@@ -25,13 +25,13 @@ const MiniConference = ({ name, miniId }) => {
 
     const inviteUsers = (ids) => {
         ids.forEach(id => {
-            inviteUser(mainConference.id, id, miniId, name);
+            inviteUser(mainConferenceId, id, miniId, name);
         });
     }
 
     const joinMini = async (id) => {
         await leaveConference();
-        history.push(`/conference/${mainConference.id}/mini/${id}`);
+        history.push(`/conference/${mainConferenceId}/mini/${id}`);
     }
 
     const [showInviteModal, setShowInviteModal] = useState(false);
@@ -39,12 +39,12 @@ const MiniConference = ({ name, miniId }) => {
         <div className="mini-conference-wrapper p-3 mb-3" >
             <div className="d-flex justify-content-between align-items-start">
                 <p className="conference-name mb-2">{name.split('|')[1]}</p>
-                <p className="participants-count mb-0 d-flex align-items-center"><TeamOutlined /><span style={{ marginLeft: '5px' }}>0</span></p>
+                <p className="participants-count mb-0 d-flex align-items-center"><TeamOutlined /><span style={{ marginLeft: '5px' }}>{miniList[miniId].participants ? Object.keys(miniList[miniId].participants).length : '0'}</span></p>
 
             </div>
             <div className="d-flex mt-4 justify-content-between align-items-end mb-2">
-                <Button type="success" onClick={() => setShowInviteModal(true)}><MailOutlined />invite</Button>
-                <Button type="primary" onClick={() => joinMini(miniId)}> <UserAddOutlined />join</Button>
+                <Button type="default" onClick={() => setShowInviteModal(true)}><MailOutlined />Invite</Button>
+                <Button type="default" className="filled" onClick={() => joinMini(miniId)}> <UserAddOutlined />Join</Button>
             </div>
 
             <Modal title="Invite people" visible={showInviteModal} onCancel={() => setShowInviteModal(false)} onOk={() => { setShowInviteModal(false); inviteUsers(inviteeIds) }}>

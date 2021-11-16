@@ -12,8 +12,7 @@ const Header = ({ conferenceName }) => {
                 </p>
                 <h4 className="conference-name-text mb-0">{conferenceName}</h4>
             </div>
-
-            <Button type="primary" size="large" icon={<LogoutOutlined />}>Logout </Button>
+            <Button type="danger" size="large" icon={<LogoutOutlined />}>Logout </Button>
         </div>
     )
 }

@@ -39,9 +39,10 @@ const ParticipantsWrapper = () => {
                     {Object.keys(currentParticipants).map(id => currentUser.uid !== id && currentParticipants[id].active &&
                         <Col span={6}><ParticipantCard key={id} participant={currentParticipants[id]}></ParticipantCard></Col>)}
                 </Row>
-                <Controls />
             </div >
+            <Controls />
         </div >
+
     )
 }
 

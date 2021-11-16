@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Button, Col, notification, Row } from 'antd';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import Header from './Header';
 import RightPanel from './RightPanel/RightPanel';
 import { useConference } from '../context/ConferenceContext';
@@ -13,26 +12,23 @@ import { toTitleCase } from '../util/Utils';
 
 const Conference = () => {
     const history = useHistory();
-    const { id, mId } = useParams();
     const { currentUser } = useAuth();
-    const { getConferenceById, joinConference, isAdmin, leaveConference, mainConference } = useConference();
+    const { getConferenceById, setMainConferenceId, joinConference, isAdmin, leaveConference, mainConferenceId, currentConference } = useConference();
     const { getInvites, updateInvite } = useDatabase();
-    const [currentConference, setCurrentConference] = useState();
-    const [isMini, setIsMini] = useState(false);
-    const [currentId, setCurrentId] = useState();
     const [invites, setInvites] = useState();
+    const { id, mId } = useParams();
 
     // Receive Invites
     useEffect(() => {
-        if (currentUser && mainConference) {
-            getInvites(mainConference.id, currentUser.uid, snapshot => {
+        if (currentUser && mainConferenceId) {
+            getInvites(mainConferenceId, currentUser.uid, snapshot => {
                 if (snapshot && snapshot.val()) {
                     setInvites(snapshot.val());
                 }
             });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentUser, mainConference]);
+    }, [currentUser, mainConferenceId]);
 
     // Send Invite Notification
     useEffect(() => {
@@ -40,37 +36,29 @@ const Conference = () => {
             Object.keys(invites).forEach(key => {
                 if (invites[key].status === 'NEW') {
                     openInviteNotification(invites[key].name.split('|')[1], key);
-                    updateInvite(currentId, currentUser.uid, key, invites[key].name);
+                    updateInvite(currentConference.id, currentUser.uid, key, invites[key].name);
                 }
             });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [MiniConference, currentUser, invites])
 
-
-    // Check is Mini Conference
-    useEffect(() => {
-        setCurrentId(mId ? mId : id);
-        setIsMini(mId ? true : false);
-    }, [id, mId]);
-
     // Join Conference
     useEffect(() => {
-        if (currentId) {
+        if (id || mId) {
             const processConference = async () => {
-                const conference = await getConferenceById(currentId);
-                await joinConference(conference, isMini);
-                setCurrentConference(conference);
+                const conference = await getConferenceById(mId ? mId : id);
+                setMainConferenceId(id);
+                await joinConference(conference, mId ? true : false);
             }
             processConference();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentId]);
-
+    }, [id, mId]);
 
     const joinMini = async (id) => {
         await leaveConference();
-        history.push(`/conference/${mainConference.id}/mini/${id}`);
+        history.push(`/conference/${mainConferenceId}/mini/${id}`);
     }
 
     const openInviteNotification = (name, id) => {

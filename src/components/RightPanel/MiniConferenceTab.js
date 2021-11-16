@@ -1,4 +1,5 @@
-import { Button, Col, Input, Modal, Row } from 'antd'
+import { ExclamationCircleTwoTone } from '@ant-design/icons'
+import { Button, Col, Input, Modal, Row, Empty } from 'antd'
 import React, { useState } from 'react'
 import { useConference } from '../../context/ConferenceContext'
 import { useDatabase } from '../../context/DatabaseContext'
@@ -7,7 +8,7 @@ import MiniConference from './MiniConference'
 const MiniConferenceTab = () => {
 
     const { insertMini } = useDatabase();
-    const { createConference, mainConference, miniList } = useConference();
+    const { createConference, mainConferenceId, miniList } = useConference();
     const [showCreateMiniModal, setShowCreateMiniModal] = useState(false);
     const [miniName, setMiniName] = useState('');
 
@@ -21,8 +22,8 @@ const MiniConferenceTab = () => {
 
     const handleOk = async () => {
         setShowCreateMiniModal(false);
-        const minispace = await createConference('mini|' + miniName + '|' + mainConference.id, { ttl: 20000 })
-        insertMini(mainConference.id, minispace.id, minispace.alias);
+        const minispace = await createConference('mini|' + miniName + '|' + mainConferenceId, { ttl: 20000 })
+        insertMini(mainConferenceId, minispace.id, minispace.alias);
     };
 
     return (
@@ -31,14 +32,30 @@ const MiniConferenceTab = () => {
                 + New
             </Button>
             <div className="clearfix"></div>
+            {(!miniList || (miniList && !Object.keys(miniList).length)) &&
+                <Empty
+                    image={<ExclamationCircleTwoTone twoToneColor="#333" style={{ fontSize: '50px' }} />}
+                    imageStyle={{
+                        height: 60,
+                    }}
+                    description={
+                        <span className="text-white-50">
+                            No Mini Conferences created!<br />
+                            <p>
+                                Please press <span className="text-success cursor-pointer" onClick={handleShowCreateMiniModal}>+ New</span> to create new mini conference
+                            </p>
+                        </span>
+                    }>
+                </Empty>
+            }
             <Row gutter={{ xs: 8, sm: 16, md: 16, lg: 16 }}>
                 {miniList && Object.keys(miniList).map(id =>
-                    <Col span={12}>
+                    <Col span={12} key={id}>
                         <MiniConference key={id} miniId={id} name={miniList[id].name}></MiniConference>
                     </Col>
                 )}
             </Row>
-            <Modal title="Create MiniSpace" visible={showCreateMiniModal} onOk={handleOk} onCancel={handleCancel}>
+            <Modal key="crateMiniModal" title="Create MiniSpace" visible={showCreateMiniModal} onOk={handleOk} onCancel={handleCancel}>
                 <Input size="large" placeholder="Enter name" onChange={e => setMiniName(e.target.value)}></Input>
             </Modal>
         </div>

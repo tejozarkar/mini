@@ -18,9 +18,11 @@ export const ConferenceProvider = ({ children }) => {
     const [totalCurrentParticipants, setTotalCurrentParticipants] = useState(0);
     const [admins, setAdmins] = useState({});
     const [isAdmin, setIsAdmin] = useState(false);
-    const [mainConference, setMainConference] = useState();
+    const [mainConferenceId, setMainConferenceId] = useState();
     const [miniList, setMiniList] = useState();
     const [allParticipants, setAllParticipants] = useState({});
+    const [currentConference, setCurrentConference] = useState();
+    const [isMini, setIsMini] = useState(false);
 
     // Open Session
     useEffect(() => {
@@ -34,19 +36,19 @@ export const ConferenceProvider = ({ children }) => {
 
     // Get Admins | MiniConf | AllParticipants
     useEffect(() => {
-        if (mainConference) {
-            getAdmins(mainConference.id, (snapshot) => {
+        if (mainConferenceId) {
+            getAdmins(mainConferenceId, (snapshot) => {
                 setAdmins(snapshot.val());
             });
-            getMiniList(mainConference.id, (snapshot) => {
+            getMiniList(mainConferenceId, (snapshot) => {
                 setMiniList(snapshot.val());
             });
-            getAllParticipants(mainConference.id, (snapshot) => {
+            getAllParticipants(mainConferenceId, (snapshot) => {
                 setAllParticipants(snapshot.val());
             });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [mainConference]);
+    }, [mainConferenceId]);
 
     // Find User is Admin
     useEffect(() => {
@@ -61,6 +63,13 @@ export const ConferenceProvider = ({ children }) => {
         }
     }, [currentUser, admins]);
 
+    useEffect(() => {
+        if (currentConference) {
+            insertParticipant(mainConferenceId, currentUser, isMini && currentConference.id);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentConference])
+
     // Add remove Current Conference Participants
     useEffect(() => {
         if (sessionOpened) {
@@ -74,7 +83,7 @@ export const ConferenceProvider = ({ children }) => {
                 setCurrentParticipants(participants => ({ ...participants, [participant.info.externalId]: { id: participant.info.externalId, name: participant.info.name, active: true } }));
             });
         }
-    }, [sessionOpened, mainConference, currentUser]);
+    }, [sessionOpened, mainConferenceId, currentUser]);
 
     // Count Total Current Participants
     useEffect(() => {
@@ -86,14 +95,6 @@ export const ConferenceProvider = ({ children }) => {
         setTotalCurrentParticipants(total);
     }, [currentParticipants]);
 
-    // Add Participant to Database
-    useEffect(() => {
-        if (mainConference) {
-            insertParticipant(mainConference.id, currentUser);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentUser, mainConference])
-
     const createConference = (alias, params = {}) => {
         return VoxeetSDK.conference.create({ alias, params });
     }
@@ -102,12 +103,11 @@ export const ConferenceProvider = ({ children }) => {
         return VoxeetSDK.conference.fetch(id);
     }
 
-    const joinConference = (conference, isMini = true) => {
+    const joinConference = (conference, isMini) => {
         return new Promise((resolve, reject) => {
             VoxeetSDK.conference.join(conference, {}).then(() => {
-                if (!isMini) {
-                    setMainConference(conference);
-                }
+                setIsMini(isMini);
+                setCurrentConference(conference);
                 resolve();
             });
         });
@@ -129,6 +129,18 @@ export const ConferenceProvider = ({ children }) => {
         VoxeetSDK.conference.on('streamRemoved', callback);
     }
 
+    const startVideo = (callback) => {
+        VoxeetSDK.conference.startVideo(VoxeetSDK.session.participant).then(() => {
+            callback();
+        });
+    }
+
+    const stopVideo = (callback) => {
+        VoxeetSDK.conference.stopVideo(VoxeetSDK.session.participant).then(() => {
+            callback();
+        });
+    }
+
     const value = {
         createConference,
         getConferenceById,
@@ -137,18 +149,23 @@ export const ConferenceProvider = ({ children }) => {
         streamAdded,
         streamUpdated,
         streamRemoved,
+        setMainConferenceId,
+        startVideo,
+        stopVideo,
         currentParticipants,
         totalCurrentParticipants,
         isAdmin,
         admins,
         miniList,
         allParticipants,
-        mainConference
+        mainConferenceId,
+        currentConference,
+        isMini
     }
 
     return (
         <ConferenceContext.Provider value={value}>
-            {children}
+            {sessionOpened && children}
         </ConferenceContext.Provider>
     )
 }

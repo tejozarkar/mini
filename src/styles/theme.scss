@@ -1,5 +1,13 @@
 @import "./variables.scss";
 
+.text-success {
+   color: $success-color !important;
+}
+
+.cursor-pointer {
+   cursor: pointer;
+}
+
 .ant-modal {
    color: white !important;
 }
@@ -30,18 +38,57 @@
 
 .ant-btn {
    background-color: rgba(0, 0, 0, 0);
-   color: white;
-   border: 1px solid $primary-btn-color;
    display: flex !important;
    align-items: center !important;
    justify-content: center !important;
+   border-radius: 10px;
    &:hover {
-      background: #333;
+      background: $primary-color;
       color: white;
    }
+
+   &.ant-btn-default {
+      background-color: transparent;
+      color: $primary-btn-color !important;
+      border-radius: 0 !important;
+      border: 1px solid $primary-btn-color;
+      &.filled {
+         background-color: $primary-btn-color;
+         border: 1px solid $secondary-color !important;
+         color: black !important;
+         border-radius: 0 !important;
+      }
+   }
+
    &.ant-btn-primary {
-      background-color: $primary-btn-color !important;
+      background-color: transparent;
       color: $secondary-btn-color !important;
+      &.filled {
+         border: 1px solid $secondary-color !important;
+         color: white !important;
+         border-radius: 0 !important;
+      }
+   }
+   &.ant-btn-danger {
+      background-color: none;
+      color: $danger-color !important;
+      border: 1px solid #2f3943;
+      &.filled {
+         background-color: $danger-color !important;
+         border: none !important;
+         color: white !important;
+      }
+   }
+   &.ant-btn-success {
+      background-color: transparent;
+      color: $success-color !important;
+      border: 1px solid #2f3943;
+      &.filled {
+         //  background-color: $success-color !important;
+         border: 1px solid $secondary-color !important;
+         //  color: black !important;
+         border-radius: 0 !important;
+      }
    }
 }
 

@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { getDatabase, onValue, ref, set, update } from '@firebase/database'
+import { getDatabase, onValue, ref, set, update, remove } from '@firebase/database'
 import firebase from '../service/firebase';
 
 const DatabaseContext = React.createContext();
@@ -12,7 +12,7 @@ export const DatabaseProvider = ({ children }) => {
 
 
     const insertMainConference = (conferenceId, conferenceName, user) => {
-        set(ref(getDatabase(firebase), conferenceId), {
+        set(ref(getDatabase(firebase), '/conferences/' + conferenceId), {
             name: conferenceName,
             admins: {
                 [user.uid]: {
@@ -22,17 +22,22 @@ export const DatabaseProvider = ({ children }) => {
         });
     }
 
-    const insertParticipant = (conferenceId, user) => {
-        update(ref(getDatabase(firebase), conferenceId + '/participants'), {
+    const insertParticipant = (conferenceId, user, miniId) => {
+        const dbUrlMini = `/conferences/${conferenceId}/mini/${miniId}/participants`;
+        const dbUrlMain = `/conferences/${conferenceId}/participants`;
+        const userConf = {
             [user.uid]: {
-                name: user.displayName,
-                invites: { status: 'EXPIRED' }
+                name: user.displayName
             }
-        });
+        }
+        update(ref(getDatabase(firebase), dbUrlMain), userConf);
+        if (miniId) {
+            update(ref(getDatabase(firebase), dbUrlMini), userConf);
+        }
     }
 
     const insertMini = (conferenceId, miniId, miniName) => {
-        update(ref(getDatabase(firebase), conferenceId + '/mini'), {
+        update(ref(getDatabase(firebase), '/conferences/' + conferenceId + '/mini'), {
             [miniId]: {
                 name: miniName
             }
@@ -40,23 +45,28 @@ export const DatabaseProvider = ({ children }) => {
     }
 
     const getInvites = (conferenceId, userId, callback) => {
-        onValue(ref(getDatabase(firebase), conferenceId + '/participants/' + userId + '/invites'), callback);
+        onValue(ref(getDatabase(firebase), '/conferences/' + conferenceId + '/participants/' + userId + '/invites'), callback);
     }
 
     const getAdmins = (conferenceId, callback) => {
-        onValue(ref(getDatabase(firebase), conferenceId + '/admins'), callback);
+        onValue(ref(getDatabase(firebase), '/conferences/' + conferenceId + '/admins'), callback);
     }
 
     const getMiniList = (conferenceId, callback) => {
-        onValue(ref(getDatabase(firebase), conferenceId + '/mini'), callback);
+        onValue(ref(getDatabase(firebase), '/conferences/' + conferenceId + '/mini'), callback);
     }
 
     const getAllParticipants = (conferenceId, callback) => {
-        onValue(ref(getDatabase(firebase), conferenceId + '/participants'), callback);
+        onValue(ref(getDatabase(firebase), '/conferences/' + conferenceId + '/participants'), callback);
+    }
+
+    const deleteParticipant = (conferenceId, participantId, miniId) => {
+        const dbUrl = miniId ? `/conferences/${conferenceId}/mini/${miniId}/participants/${participantId}` : `/conferences/${conferenceId}/participants/${participantId}`;
+        remove(ref(getDatabase(firebase), dbUrl));
     }
 
     const inviteUser = (conferenceId, participantId, miniId, miniName) => {
-        update(ref(getDatabase(firebase), conferenceId + '/participants/' + participantId + '/invites'), {
+        update(ref(getDatabase(firebase), '/conferences/' + conferenceId + '/participants/' + participantId + '/invites'), {
             [miniId]: {
                 name: miniName,
                 status: 'NEW'
@@ -65,7 +75,7 @@ export const DatabaseProvider = ({ children }) => {
     }
 
     const updateInvite = (conferenceId, userId, miniId, miniName) => {
-        set(ref(getDatabase(firebase), conferenceId + '/participants/' + userId + '/invites/' + miniId), {
+        set(ref(getDatabase(firebase), '/conferences/' + conferenceId + '/participants/' + userId + '/invites/' + miniId), {
             name: miniName,
             status: 'PENDING'
         });
@@ -79,6 +89,7 @@ export const DatabaseProvider = ({ children }) => {
         getAdmins,
         getMiniList,
         getAllParticipants,
+        deleteParticipant,
         inviteUser,
         updateInvite
     }

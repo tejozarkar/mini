@@ -2,24 +2,30 @@
 
 .tab-buttons {
    //   background: $primary-color;
-   //   position: relative;
+   position: relative;
+   width: 100%;
    .tab-button {
       position: absolute;
       border: none;
       background: $primary-color;
       color: white;
-      padding: 1em;
-      width: 50%;
-      padding-left: 3em;
+      padding: 0.7em;
       width: 55%;
+      padding-left: 3em;
       z-index: 0;
+      top: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding-right: 3em;
+
       &.task-button-1 {
-         left: 0;
+         left: 5px;
          top: 0;
          border-radius: 50px 0px 0px 50px;
       }
       &.task-button-2 {
-         right: 0;
+         right: 10px;
          top: 0;
          border-radius: 0px 50px 50px 0px;
       }
@@ -28,6 +34,7 @@
          color: black;
          border-radius: 50px 50px 50px 50px;
          z-index: 1;
+         width: 55%;
       }
    }
 }

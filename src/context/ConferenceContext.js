@@ -180,7 +180,7 @@ export const ConferenceProvider = ({ children }) => {
 
     return (
         <ConferenceContext.Provider value={value}>
-            {sessionOpened && children}
+            {children}
         </ConferenceContext.Provider>
     )
 }

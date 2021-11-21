@@ -1,7 +1,7 @@
 import { ArrowLeftOutlined, AudioOutlined, LoadingOutlined, PhoneOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import { Button, Col, Row } from 'antd';
 import React, { useState } from 'react';
-import { useHistory } from 'react-router';
+import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useConference } from '../../context/ConferenceContext';
 import { useDatabase } from '../../context/DatabaseContext';

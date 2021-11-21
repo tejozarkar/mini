@@ -1,37 +1,18 @@
-import { UploadOutlined } from "@ant-design/icons";
-import { Alert, Button, Input, Upload } from "antd";
+import { Alert, Button, Input } from "antd";
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { useDatabase } from "../../context/DatabaseContext";
 import './../../styles/authentication.scss';
 
 const Signup = () => {
 
     const [error, setError] = useState("");
     const { signup, updateUserProfile } = useAuth();
-    const { insertUserToFirestore } = useDatabase();
     const [email, setEmail] = useState();
-    const { uploadFile } = useDatabase();
     const [password, setPassword] = useState();
     const [confirmPassword, setConfirmPassword] = useState();
     const [displayName, setDisplayName] = useState();
     const history = useHistory();
-    const [imageAsFile, setImageAsFile] = useState('')
-    const [downloadUrl, setDownloadUrl] = useState()
-
-    const getBase64 = (img, callback) => {
-        const reader = new FileReader();
-        reader.addEventListener('load', () => callback(reader.result));
-        reader.readAsDataURL(img);
-    }
-
-    const handleImageAsFile = (e) => {
-        console.log('file', e);
-        const image = e.file.originFileObj;
-        getBase64(e.file.originFileObj, imageUrl => setDownloadUrl(imageUrl));
-        setImageAsFile(imageFile => (image));
-    }
 
 
     const handleSignup = async () => {
@@ -42,17 +23,7 @@ const Signup = () => {
         try {
             setError("");
             await signup(email, password);
-            // let photoURL;
-            // if (imageAsFile) {
-            //     uploadFile(imageAsFile, async (url) => {
-            //         photoURL = url;
-            //         await updateUserProfile(displayName, photoURL);
-            //         await insertUserToFirestore({ email, displayName, photoURL });
-            //     });
-            // } else {
             await updateUserProfile(displayName);
-            // await insertUserToFirestore({ email, displayName });
-            // }
             history.push("/");
         } catch (e) {
             console.log(e);
@@ -73,12 +44,6 @@ const Signup = () => {
                 <div className="p-3">
                     <h4 className="text-white-50"> Signup </h4>
                     {error && <Alert message={error} type="error" />}
-                    <label className="text-white-50 mb-2">Profile Picture</label>
-                    <Upload listType="picture-card" showUploadList={false} onChange={handleImageAsFile}>
-                        {downloadUrl ?
-                            <img src={downloadUrl} style={{ objectFit: 'cover', width: '100%' }} alt="avatar" /> :
-                            <span><UploadOutlined />Upload</span>}
-                    </Upload>
                     <div className="mt-4 custom-label-wrapper">
                         <label className="custom-label primary">Enter your name<span className="text-danger">* </span></label>
                         <Input onChange={(e) => setDisplayName(e.currentTarget.value)} />

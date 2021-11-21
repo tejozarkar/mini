@@ -9,7 +9,7 @@ import './../../styles/participant-list.scss';
 
 const ParticipantList = ({ participant, userId }) => {
     const { currentUser } = useAuth();
-    const { admins, currentConference, isAdmin } = useConference();
+    const { admins, currentConference } = useConference();
     const { insertAdmin, deleteAdmin } = useDatabase();
 
     const makeAdmin = () => {

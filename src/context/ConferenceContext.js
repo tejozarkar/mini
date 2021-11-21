@@ -12,7 +12,7 @@ export const useConference = () => {
 export const ConferenceProvider = ({ children }) => {
 
     const { currentUser } = useAuth();
-    const { getAdmins, getMiniList, getAllParticipants, insertParticipant } = useDatabase();
+    const { getAdmins, getMiniList, getAllParticipants, insertParticipant, deleteParticipant } = useDatabase();
     const [sessionOpened, setSessionOpened] = useState(false);
     const [currentParticipants, setCurrentParticipants] = useState({});
     const [totalCurrentParticipants, setTotalCurrentParticipants] = useState(0);
@@ -68,7 +68,7 @@ export const ConferenceProvider = ({ children }) => {
             insertParticipant(mainConferenceId, currentUser, isMini && currentConference.id);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentConference])
+    }, [currentConference]);
 
     // Add remove Current Conference Participants
     useEffect(() => {
@@ -77,7 +77,9 @@ export const ConferenceProvider = ({ children }) => {
                 setCurrentParticipants(participants => ({ ...participants, [participant.info.externalId]: { id: participant.info.externalId, name: participant.info.name, active: true } }));
             });
             streamRemoved((participant) => {
-                setCurrentParticipants(participants => ({ ...participants, [participant.info.externalId]: { id: participant.info.externalId, name: participant.info.name, active: false } }));
+                if (participant && participant.status === 'Left') {
+                    setCurrentParticipants(participants => ({ ...participants, [participant.info.externalId]: { id: participant.info.externalId, name: participant.info.name, active: false } }));
+                }
             });
             streamUpdated((participant) => {
                 setCurrentParticipants(participants => ({ ...participants, [participant.info.externalId]: { id: participant.info.externalId, name: participant.info.name, active: true } }));
@@ -113,8 +115,11 @@ export const ConferenceProvider = ({ children }) => {
         });
     }
 
-    const leaveConference = () => {
-        return VoxeetSDK.conference.leave(VoxeetSDK.session.participant);
+    const leaveConference = async (callback) => {
+        await VoxeetSDK.conference.leave(VoxeetSDK.session.participant);
+        deleteParticipant(mainConferenceId, VoxeetSDK.session.participant.info.externalId, currentConference.id);
+        if (callback)
+            callback();
     }
 
     const streamAdded = (callback) => {
@@ -129,16 +134,24 @@ export const ConferenceProvider = ({ children }) => {
         VoxeetSDK.conference.on('streamRemoved', callback);
     }
 
-    const startVideo = (callback) => {
-        VoxeetSDK.conference.startVideo(VoxeetSDK.session.participant).then(() => {
-            callback();
-        });
+    const startVideo = async (callback) => {
+        await VoxeetSDK.conference.startVideo(VoxeetSDK.session.participant);
+        callback();
     }
 
-    const stopVideo = (callback) => {
-        VoxeetSDK.conference.stopVideo(VoxeetSDK.session.participant).then(() => {
-            callback();
-        });
+    const stopVideo = async (callback) => {
+        await VoxeetSDK.conference.stopVideo(VoxeetSDK.session.participant);
+        callback();
+    }
+
+    const startMicrophone = async (callback) => {
+        await VoxeetSDK.conference.startAudio(VoxeetSDK.session.participant);
+        callback();
+    }
+
+    const stopMicrophone = async (callback) => {
+        await VoxeetSDK.conference.stopAudio(VoxeetSDK.session.participant);
+        callback();
     }
 
     const value = {
@@ -152,6 +165,8 @@ export const ConferenceProvider = ({ children }) => {
         setMainConferenceId,
         startVideo,
         stopVideo,
+        startMicrophone,
+        stopMicrophone,
         currentParticipants,
         totalCurrentParticipants,
         isAdmin,

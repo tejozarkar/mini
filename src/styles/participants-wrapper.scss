@@ -8,5 +8,9 @@
       height: 90%;
       border-radius: 10px;
       position: relative;
+      .view-all-participants-btn {
+         position: absolute;
+         bottom: 15px;
+      }
    }
 }

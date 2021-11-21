@@ -8,3 +8,16 @@ body {
    background: $secondary-color;
    color: white;
 }
+
+.logo-text {
+   font-family: "Euphoria Script", cursive;
+   font-size: 3em;
+   margin: 0;
+   padding: 0;
+}
+
+.profile-image-square {
+   width: 200px;
+   height: 200px;
+   object-fit: cover;
+}

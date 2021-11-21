@@ -11,7 +11,7 @@ const MiniConference = ({ name, miniId }) => {
 
     const { currentUser } = useAuth();
     const { inviteUser } = useDatabase();
-    const { mainConferenceId, currentParticipants, leaveConference, miniList } = useConference();
+    const { mainConferenceId, currentParticipants, leaveConference, miniList, currentConference } = useConference();
     const [inviteeIds, setInviteeIds] = useState([]);
     const history = useHistory();
 
@@ -30,8 +30,9 @@ const MiniConference = ({ name, miniId }) => {
     }
 
     const joinMini = async (id) => {
-        await leaveConference();
-        history.push(`/conference/${mainConferenceId}/mini/${id}`);
+        await leaveConference(() => {
+            history.push(`/conference/${mainConferenceId}/mini/${id}`);
+        });
     }
 
     const [showInviteModal, setShowInviteModal] = useState(false);
@@ -44,7 +45,7 @@ const MiniConference = ({ name, miniId }) => {
             </div>
             <div className="d-flex mt-4 justify-content-between align-items-end mb-2">
                 <Button type="default" onClick={() => setShowInviteModal(true)}><MailOutlined />Invite</Button>
-                <Button type="default" className="filled" onClick={() => joinMini(miniId)}> <UserAddOutlined />Join</Button>
+                {currentConference && miniId !== currentConference.id && <Button type="default" className="filled" onClick={() => joinMini(miniId)}> <UserAddOutlined />Join</Button>}
             </div>
 
             <Modal title="Invite people" visible={showInviteModal} onCancel={() => setShowInviteModal(false)} onOk={() => { setShowInviteModal(false); inviteUsers(inviteeIds) }}>

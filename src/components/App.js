@@ -17,19 +17,21 @@ function App() {
   return (
     <div className="App">
       <Router>
-        <AuthProvider>
-          <Switch>
+        <Switch>
+          <AuthProvider>
             <DatabaseProvider>
               <ConferenceProvider>
                 <PrivateRoute exact path='/' component={Home} />
                 <PrivateRoute exact path='/conference/:id' component={Conference} />
                 <PrivateRoute exact path='/conference/:id/mini/:mId' component={Conference} />
               </ConferenceProvider>
+
+              <Route path='/login' component={Login} />
+              <Route path='/signup' component={Signup} />
             </DatabaseProvider>
-            <Route path='/login' component={Login} />
-            <Route path='/signup' component={Signup} />
-          </Switch>
-        </AuthProvider>
+          </AuthProvider>
+
+        </Switch>
       </Router>
     </div>
   );

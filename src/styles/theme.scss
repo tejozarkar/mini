@@ -7,28 +7,69 @@
 .cursor-pointer {
    cursor: pointer;
 }
+.ant-drawer-content-wrapper {
+   width: 400px !important;
+   .ant-drawer-wrapper-body {
+      .ant-drawer-header {
+         background: $secondary-color !important;
+         border-radius: 0px !important;
+         border-bottom: 0px;
+         .ant-drawer-title {
+            color: $primary-btn-color !important;
+         }
+         .ant-drawer-close {
+            color: white !important;
+         }
+      }
+      .ant-drawer-body {
+         background: $secondary-color !important;
+         color: white !important;
+      }
+   }
+}
 
 .ant-modal {
    color: white !important;
+   .ant-modal-close-x {
+      color: white !important;
+   }
 }
+
 .ant-modal-title {
    color: white !important;
 }
 .ant-modal-header {
-   background-color: $primary-color !important;
-   border-bottom: 1px solid $secondary-color !important;
+   background-color: $secondary-color !important;
+   border-bottom: none !important;
 }
 .ant-modal-footer {
-   background-color: $primary-color !important;
-   border-top: 1px solid $secondary-color;
+   background-color: $secondary-color !important;
+   border-top: none !important;
+   display: flex;
+   justify-content: flex-end;
+   .ant-btn {
+      border: 1px solid #aaa;
+      color: #aaa !important;
+      border: none;
+      &.ant-btn-primary {
+         color: white !important;
+         background: $neutral-color !important;
+         border: none !important;
+         &:hover,
+         &:focus,
+         &:active {
+            background: $neutral-color-focus !important;
+         }
+      }
+   }
 }
 .ant-modal-body {
-   background-color: $primary-color !important;
+   background-color: $secondary-color !important;
 }
 
 .ant-input {
-   background: $primary-color !important;
-   border: 1px solid $logo-color !important;
+   background: transparent !important;
+   border: 1px solid $primary-btn-color !important;
    caret-color: white;
    color: white;
    &::placeholder {
@@ -36,14 +77,20 @@
    }
 }
 
+.card {
+   background: $primary-color;
+   border-radius: 20px;
+}
+
 .ant-btn {
-   background-color: rgba(0, 0, 0, 0);
+   background-color: transparent;
    display: flex !important;
    align-items: center !important;
    justify-content: center !important;
-   border-radius: 10px;
+   border-radius: 5px;
+   color: white !important;
    &:hover {
-      background: $primary-color;
+      background: $primary-color !important;
       color: white;
    }
 
@@ -62,7 +109,8 @@
 
    &.ant-btn-primary {
       background-color: transparent;
-      color: $secondary-btn-color !important;
+      color: $neutral-color !important;
+      border: 1px solid $neutral-color !important;
       &.filled {
          border: 1px solid $secondary-color !important;
          color: white !important;
@@ -70,7 +118,7 @@
       }
    }
    &.ant-btn-danger {
-      background-color: none;
+      background-color: transparent;
       color: $danger-color !important;
       border: 1px solid #2f3943;
       &.filled {
@@ -84,17 +132,25 @@
       color: $success-color !important;
       border: 1px solid #2f3943;
       &.filled {
-         //  background-color: $success-color !important;
-         border: 1px solid $secondary-color !important;
-         //  color: black !important;
+         background-color: $success-color !important;
+         border: none !important;
+         color: black !important;
          border-radius: 0 !important;
+         &:hover,
+         &:focus,
+         &:active {
+            background-color: $success-color-focus !important;
+         }
       }
    }
 }
 
 .ant-input-password {
-   border: 1px solid white;
-   background: $primary-btn-color !important;
+   border: 1px solid $primary-btn-color !important;
+   background: transparent !important;
+   .ant-input {
+      border: none !important;
+   }
    .ant-input-suffix .anticon {
       color: white !important;
    }
@@ -150,4 +206,41 @@ a {
 
 .ant-tabs-content {
    color: white;
+}
+
+.custom-label-wrapper {
+   position: relative;
+   .custom-label {
+      position: absolute;
+      top: -12px;
+      left: 10px;
+      background: $secondary-color;
+      padding: 0px 5px;
+      z-index: 1;
+      color: $label-color;
+      &.primary {
+         background: $primary-color;
+      }
+   }
+}
+
+.ant-alert-error {
+   background: $error-color !important;
+   color: white !important;
+   border: none !important;
+}
+
+.ant-tag {
+   background: transparent !important;
+}
+
+.ant-dropdown-menu {
+   background: $primary-color !important;
+   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+   .ant-dropdown-menu-item {
+      color: white !important;
+      &:hover {
+         background: $secondary-color !important;
+      }
+   }
 }

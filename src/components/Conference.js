@@ -79,15 +79,18 @@ const Conference = () => {
 
     return (
         <>
-            <Header conferenceName={currentConference && toTitleCase(currentConference.alias.split('|')[1])} />
-            <Row>
-                <Col span={16}>
-                    <ParticipantsWrapper />
-                </Col>
-                <Col span={8}>
-                    <RightPanel isAdmin={isAdmin} />
-                </Col>
-            </Row>
+            {mainConferenceId && <>
+                <Header conferenceName={currentConference && toTitleCase(currentConference.alias.split('|')[1])} />
+                <Row>
+                    <Col span={16}>
+                        <ParticipantsWrapper />
+                    </Col>
+                    <Col span={8}>
+                        <RightPanel isAdmin={isAdmin} />
+                    </Col>
+                </Row>
+            </>
+            }
         </>
     )
 }

@@ -1,15 +1,23 @@
-@import './variables.scss';
+@import "./variables.scss";
 
-.auth-wrapper{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    height: 100vh;
-   .form-wrapper{
-    padding: 2rem;
-    width: 30%;
-    background-color: $primary-color;
-   
+.auth-wrapper {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   flex-direction: column;
+   height: 100vh;
+   background: url("./../assets/sun-tornado.svg");
+   background-size: cover;
+   .form-wrapper {
+      width: 30%;
+      background-color: $primary-color;
+      border-radius: 20px;
+      .logo-text {
+         border-radius: 20px 20px 0px 0px;
+         font-size: 5em !important;
+         background: #476072;
+         width: 100%;
+         color: #fef5ed;
+      }
    }
 }

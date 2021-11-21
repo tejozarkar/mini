@@ -1,6 +1,5 @@
-import VoxeetSDK from '@voxeet/voxeet-web-sdk';
-import React from 'react'
-import { Button, Form, Input } from 'antd';
+import React, { useState } from 'react'
+import { Button, Input } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import './../../styles/authentication.scss';
@@ -9,11 +8,12 @@ const Login = () => {
 
     const { login } = useAuth();
     const history = useHistory();
-    const handleLogin = async (values) => {
+    const [email, setEmail] = useState();
+    const [password, setPassword] = useState();
+    const handleLogin = async () => {
         try {
-            await login(values['email'], values['password']);
-            VoxeetSDK.session.open({ name: values['email'] })
-            history.goBack();
+            await login(email, password);
+            history.push('/');
         } catch {
 
         }
@@ -22,29 +22,31 @@ const Login = () => {
     const gotoSignup = () => {
         history.push('/signup');
     }
+
     return (
         <div className="auth-wrapper">
+
             <div className="form-wrapper">
-                <h3> Login </h3>
-                <Form name="basic" layout="vertical" onFinish={handleLogin}
-                    autoComplete="off">
-                    <Form.Item label="Email" name="email"
-                        rules={[{ required: true, message: "Please input your email!" }]}>
-                        <Input />
-                    </Form.Item>
-                    <Form.Item label="Password" name="password"
-                        rules={[{ required: true, message: "Please input your password!" }]}>
-                        <Input.Password />
-                    </Form.Item>
-                    <Form.Item>
-                        <Button style={{ width: '100%' }} type="primary" htmlType="submit">
-                            Submit
-                        </Button>
-                        <Button style={{ width: '100%' }} type="link" onClick={gotoSignup}>Don't have an account? Signup</Button>
-                    </Form.Item>
-                </Form>
+                <p className="logo-text mb-3 text-center">
+                    mini
+                </p>
+                <div className="p-3 py-5">
+                    <h4 className="text-white-50"> Login </h4>
+                    <div className="mt-4 custom-label-wrapper">
+                        <label className="custom-label primary">Enter email</label>
+                        <Input onChange={(e) => setEmail(e.currentTarget.value)} />
+                    </div>
+                    <div className="mt-4 custom-label-wrapper">
+                        <label className="custom-label primary">Enter password</label>
+                        <Input type="password" onChange={e => setPassword(e.currentTarget.value)} />
+                    </div>
+                    <div className="d-flex justify-content-end">
+                        <Button type="success" className="filled mt-3" onClick={handleLogin}>Login</Button>
+                    </div>
+                    <Button style={{ width: '100%' }} type="link" onClick={gotoSignup}>Don't have an account? Signup</Button>
+                </div>
             </div>
-        </div>
+        </div >
     )
 }
 

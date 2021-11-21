@@ -28,8 +28,11 @@ export const AuthProvider = ({ children }) => {
         return signInWithEmailAndPassword(auth, email, password);
     }
 
-    const updateDisplayName = (displayName) => {
-        return updateProfile(auth.currentUser, { displayName });
+    const updateUserProfile = (displayName, photoURL = null) => {
+        let obj;
+        if (photoURL) obj = { displayName, photoURL }
+        else obj = { displayName }
+        return updateProfile(auth.currentUser, obj);
     }
 
     const logout = () => {
@@ -41,7 +44,7 @@ export const AuthProvider = ({ children }) => {
         login,
         logout,
         currentUser,
-        updateDisplayName
+        updateUserProfile
     }
 
     return (

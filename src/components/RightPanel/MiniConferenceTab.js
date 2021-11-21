@@ -56,7 +56,10 @@ const MiniConferenceTab = () => {
                 )}
             </Row>
             <Modal key="crateMiniModal" title="Create MiniSpace" visible={showCreateMiniModal} onOk={handleOk} onCancel={handleCancel}>
-                <Input size="large" placeholder="Enter name" onChange={e => setMiniName(e.target.value)}></Input>
+                <div className="custom-label-wrapper">
+                    <label className="custom-label">Enter conference name</label>
+                    <Input size="large" onChange={e => setMiniName(e.target.value)}></Input>
+                </div>
             </Modal>
         </div>
     )

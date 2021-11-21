@@ -13,7 +13,7 @@ const ParticipantsWrapper = () => {
 
     const { currentUser } = useAuth();
     const { allParticipants, totalCurrentParticipants, currentParticipants, streamUpdated, streamAdded, streamRemoved, isMini } = useConference();
-    const [visibleParticipants, setVisibleParticipants] = useState({});
+    // const [visibleParticipants, setVisibleParticipants] = useState({});
     const [showParticipantList, setShowParticipantList] = useState(false);
 
     useEffect(() => {
@@ -36,13 +36,14 @@ const ParticipantsWrapper = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    useEffect(() => {
-        Object.keys(currentParticipants).forEach((key) => {
-            if (currentParticipants[key].id !== currentUser.uid && currentParticipants[key].active && Object.keys(currentParticipants).length <= 6) {
-                setVisibleParticipants(visibleParticipants => ({ ...visibleParticipants, [key]: currentParticipants[key] }));
-            }
-        });
-    }, [currentParticipants, currentUser]);
+    // useEffect(() => {
+    //     console.log('change in participant', currentParticipants);
+    //     Object.keys(currentParticipants).forEach((key) => {
+    //         if (currentParticipants[key].id !== currentUser.uid && currentParticipants[key].active && Object.keys(currentParticipants).length <= 6) {
+    //             setVisibleParticipants(visibleParticipants => ({ ...visibleParticipants, [key]: currentParticipants[key] }));
+    //         }
+    //     });
+    // }, [currentParticipants, currentUser]);
 
 
     return (
@@ -54,8 +55,8 @@ const ParticipantsWrapper = () => {
                         <Col span={6}>
                             <ParticipantCard key={currentUser.uid} participant={{ id: currentUser.uid, name: 'You', active: true }}></ParticipantCard>
                         </Col>
-                        {Object.keys(visibleParticipants).map((id) => currentUser.uid !== id && visibleParticipants[id].active &&
-                            <Col span={6}><ParticipantCard key={id} participant={visibleParticipants[id]}></ParticipantCard></Col>)}
+                        {Object.keys(currentParticipants).map((id) => currentUser.uid !== id && currentParticipants[id].active &&
+                            <Col span={6}><ParticipantCard key={id} participant={currentParticipants[id]}></ParticipantCard></Col>)}
                     </Row>
                 </div>
                 <Button className="view-all-participants-btn" type="default" onClick={() => setShowParticipantList(true)}> View all participants</Button>

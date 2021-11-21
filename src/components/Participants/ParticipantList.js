@@ -22,7 +22,7 @@ const ParticipantList = ({ participant, userId }) => {
 
     const menu = (
         <Menu>
-            {admins.hasOwnProperty(userId) ?
+            {admins && admins.hasOwnProperty(userId) ?
                 <Menu.Item onClick={removeAdmin}>
                     Remove as Admin
                 </Menu.Item> :
@@ -39,8 +39,8 @@ const ParticipantList = ({ participant, userId }) => {
             <div className="participant-list-wrapper p-3 mb-2 d-flex justify-content-between align-items-center ">
                 <p className="mb-0">{toTitleCase(participant.name)}{currentUser.uid === userId && ' ( you ) '}</p>
                 <div className="d-flex align-items-center">
-                    {admins.hasOwnProperty(userId) && <Tag color="gold">Admin</Tag>}
-                    {admins.hasOwnProperty(currentUser.uid) && userId !== currentUser.uid && <Dropdown overlay={menu} placement="topRight">
+                    {admins && admins.hasOwnProperty(userId) && <Tag color="gold">Admin</Tag>}
+                    {admins && admins.hasOwnProperty(currentUser.uid) && userId !== currentUser.uid && <Dropdown overlay={menu} placement="topRight">
                         <Button type="text">
                             <MoreOutlined />
                         </Button>

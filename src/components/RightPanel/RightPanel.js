@@ -13,7 +13,7 @@ const RightPanel = () => {
 
     return (
         <div>
-            {admins.hasOwnProperty(currentUser.uid) &&
+            {admins && admins.hasOwnProperty(currentUser.uid) &&
                 <div className="tab-buttons">
                     <button onClick={() => setCurrentTab(0)} className={`tab-button task-button-1 ${currentTab === 0 && 'active'}`}>
                         <VideoCameraOutlined /><span style={{ marginLeft: '8px' }}>Mini Conferences</span>
@@ -24,7 +24,7 @@ const RightPanel = () => {
                 </div>
             }
             <div className="pb-5"></div>
-            {admins.hasOwnProperty(currentUser.uid) && currentTab === 0 && <MiniConferenceTab />}
+            {admins && admins.hasOwnProperty(currentUser.uid) && currentTab === 0 && <MiniConferenceTab />}
         </div>
     )
 }

@@ -61,7 +61,7 @@ export const ConferenceProvider = ({ children }) => {
                 }
             });
         }
-    }, [currentUser, admins]);
+    }, [currentUser, admins, mainConferenceId]);
 
     useEffect(() => {
         if (currentConference) {
@@ -85,7 +85,7 @@ export const ConferenceProvider = ({ children }) => {
                 setCurrentParticipants(participants => ({ ...participants, [participant.info.externalId]: { id: participant.info.externalId, name: participant.info.name, active: true } }));
             });
         }
-    }, [sessionOpened, mainConferenceId, currentUser]);
+    }, [sessionOpened, currentConference, currentUser]);
 
     // Count Total Current Participants
     useEffect(() => {
@@ -95,7 +95,7 @@ export const ConferenceProvider = ({ children }) => {
             total++
         );
         setTotalCurrentParticipants(total);
-    }, [currentParticipants]);
+    }, [currentParticipants, currentConference]);
 
     const createConference = (alias, params = {}) => {
         return VoxeetSDK.conference.create({ alias, params });
@@ -107,17 +107,22 @@ export const ConferenceProvider = ({ children }) => {
 
     const joinConference = (conference, isMini) => {
         return new Promise((resolve, reject) => {
-            VoxeetSDK.conference.join(conference, {}).then(() => {
-                setIsMini(isMini);
-                setCurrentConference(conference);
-                resolve();
-            });
+            if (conference) {
+                VoxeetSDK.conference.join(conference, {}).then(() => {
+                    setIsMini(isMini);
+                    setCurrentConference(conference);
+                    resolve();
+                });
+            }
         });
     }
 
     const leaveConference = async (callback) => {
+        setCurrentParticipants({});
         await VoxeetSDK.conference.leave(VoxeetSDK.session.participant);
-        deleteParticipant(mainConferenceId, VoxeetSDK.session.participant.info.externalId, currentConference.id);
+        if (currentConference) {
+            deleteParticipant(mainConferenceId, VoxeetSDK.session.participant.info.externalId, currentConference.id);
+        }
         if (callback)
             callback();
     }
@@ -180,7 +185,7 @@ export const ConferenceProvider = ({ children }) => {
 
     return (
         <ConferenceContext.Provider value={value}>
-            {children}
+            {(!currentUser || sessionOpened) && children}
         </ConferenceContext.Provider>
     )
 }

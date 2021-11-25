@@ -1,0 +1,44 @@
+@import "./variables.scss";
+
+.chat-wrap {
+   height: calc(100vh - 165px);
+   display: flex;
+   flex-direction: column;
+   justify-content: flex-end;
+   .chat-messages-wrap {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      overflow: auto;
+      .chat-message {
+         display: flex;
+         flex-direction: column;
+         .chat-message-inner {
+            background: $primary-color;
+            max-width: 80%;
+            min-width: 40%;
+         }
+         &.left {
+            align-items: flex-start;
+            .chat-message-inner {
+               border-radius: 10px 10px 10px 0px;
+            }
+         }
+         &.right {
+            align-items: flex-end;
+            .chat-message-inner {
+               border-radius: 10px 10px 0px 10px;
+            }
+         }
+      }
+   }
+}
+
+.ant-input {
+   &.chat-input {
+      border: 5px solid $primary-color !important;
+      background: $primary-color !important;
+      height: 100%;
+   }
+}

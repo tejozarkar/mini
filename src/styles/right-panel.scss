@@ -38,3 +38,10 @@
       }
    }
 }
+
+.chat-header {
+   color: $primary-btn-color;
+   border-bottom: 2px solid $primary-btn-color;
+   display: inline;
+   padding-bottom: 10px;
+}

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { toTitleCase } from '../../util/Utils';
 import './../../styles/profile.scss';
@@ -6,9 +6,6 @@ import CustomPhoto from './CustomPhoto';
 
 const Profile = () => {
     const { currentUser } = useAuth();
-    useEffect(() => {
-        console.log(currentUser);
-    }, [currentUser])
 
     return (
         <div className="profile-wrapper p-3">
@@ -23,8 +20,7 @@ const Profile = () => {
                     <h6>Last login at: <span className="text-white-50">{currentUser && currentUser.metadata.lastSignInTime}</span></h6>
                 </div>
             </div>
-
-        </div >
+        </div>
     )
 }
 

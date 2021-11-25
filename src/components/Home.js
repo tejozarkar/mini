@@ -1,5 +1,5 @@
 import { Button, Col, Input, Row } from 'antd';
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useConference } from '../context/ConferenceContext';
 import { useDatabase } from '../context/DatabaseContext';
 import { useHistory } from 'react-router-dom';
@@ -9,6 +9,7 @@ import Header from './Header';
 import Profile from './Profile/Profile';
 import { CalendarOutlined, EditOutlined, PlusOutlined, ShareAltOutlined } from '@ant-design/icons';
 import EditProfile from './Profile/EditProfile';
+import { hideLoader, showLoader } from '../util/Utils';
 
 const Home = () => {
 
@@ -21,14 +22,11 @@ const Home = () => {
 
     const history = useHistory();
 
-    useEffect(() => {
-        console.log(currentUser);
-
-    }, [currentUser])
-
     const handleCreateConference = async () => {
+        showLoader();
         const conference = await createConference(currentUser.uid + '|' + conferenceName, { ttl: 1000 }, currentUser);
         insertMainConference(conference.id, conference.alias, currentUser);
+        hideLoader();
         history.push('/conference/' + conference.id);
     }
 

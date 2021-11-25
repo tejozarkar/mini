@@ -1,3 +1,4 @@
+import loaderImg from './../assets/loader.svg';
 
 export const addVideoNode = (participant, stream) => {
     let participantVideoNode = document.getElementById(`participant-${participant.info.externalId}`);
@@ -40,38 +41,58 @@ export const toTitleCase = (str) => {
     );
 }
 
+export const showLoader = () => {
+    let loaderWrapper = document.getElementById('loader-wrapper');
+    if (loaderWrapper) {
+        return;
+    }
+    loaderWrapper = document.createElement('div');
+    loaderWrapper.id = 'loader-wrapper';
+    loaderWrapper.style.width = '100vw';
+    loaderWrapper.style.height = '100vh';
+    loaderWrapper.style.position = 'absolute';
+    loaderWrapper.style.top = '0';
+    loaderWrapper.style.zIndex = '999';
+    loaderWrapper.style.background = '#0006';
+    loaderWrapper.style.display = 'flex';
+    loaderWrapper.style.justifyContent = 'center';
+    loaderWrapper.style.alignItems = 'center';
+    const loader = document.createElement('img');
+    loader.height = '100';
+    loader.width = '100';
+    loader.src = loaderImg;
+    loaderWrapper.appendChild(loader);
+    document.body.appendChild(loaderWrapper);
+}
+
+export const hideLoader = () => {
+    let loaderWrapper = document.getElementById('loader-wrapper');
+    if (loaderWrapper) {
+        document.body.removeChild(loaderWrapper);
+    }
+}
+
 export const getAlphabetColor = (alphabet) => {
     return background[toTitleCase(alphabet)];
 }
 
 export const changeColorContrast = (col, amt) => {
-
-    var usePound = false;
-
+    let usePound = false;
     if (col[0] === "#") {
         col = col.slice(1);
         usePound = true;
     }
-
-    var num = parseInt(col, 16);
-
-    var r = (num >> 16) + amt;
-
+    const num = parseInt(col, 16);
+    let r = (num >> 16) + amt;
     if (r > 255) r = 255;
     else if (r < 0) r = 0;
-
-    var b = ((num >> 8) & 0x00FF) + amt;
-
+    let b = ((num >> 8) & 0x00FF) + amt;
     if (b > 255) b = 255;
     else if (b < 0) b = 0;
-
-    var g = (num & 0x0000FF) + amt;
-
+    let g = (num & 0x0000FF) + amt;
     if (g > 255) g = 255;
     else if (g < 0) g = 0;
-
     return (usePound ? "#" : "") + (g | (b << 8) | (r << 16)).toString(16);
-
 }
 
 

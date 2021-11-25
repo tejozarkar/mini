@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { getDatabase, onValue, ref, set, update, remove, get } from '@firebase/database'
+import { getDatabase, onValue, ref, set, update, remove, get, push } from '@firebase/database'
 import firebase, { firestore, storage } from '../service/firebase';
 import { ref as storageref, uploadBytes, getDownloadURL } from '@firebase/storage';
 import { collection, getDoc, addDoc } from '@firebase/firestore';
@@ -122,6 +122,35 @@ export const DatabaseProvider = ({ children }) => {
         return getDoc(collection(firestore, 'users', id));
     }
 
+    const wave = (mainConferenceId, miniId, userId, name) => {
+        update(ref(getDatabase(firebase), '/conferences/' + mainConferenceId + '/mini/' + miniId + '/waves'), {
+            name: name,
+            status: 'NEW'
+        });
+    }
+
+    const getWaves = (mainConferenceId, miniId, callback) => {
+        onValue(ref(getDatabase(firebase), '/conferences/' + mainConferenceId + '/mini/' + miniId + '/waves'), callback);
+    }
+
+    const updateWaveStatus = (mainConferenceId, miniId, status) => {
+        set(ref(getDatabase(firebase), '/conferences/' + mainConferenceId + '/mini/' + miniId + '/waves/status'), status);
+    }
+
+    const insertChatMessage = (message, userId, userName, conferenceId, miniId = null) => {
+        const dbUrl = miniId ? `/conferences/${conferenceId}/mini/${miniId}/chat` : `/conferences/${conferenceId}/chat}`;
+        push(ref(getDatabase(firebase), dbUrl), {
+            message,
+            userName,
+            userId
+        });
+    }
+
+    const getChat = (conferenceId, miniId, callback) => {
+        const dbUrl = miniId ? `/conferences/${conferenceId}/mini/${miniId}/chat` : `/conferences/${conferenceId}/chat}`;
+        onValue(ref(getDatabase(firebase), dbUrl), callback);
+    }
+
     const value = {
         insertMainConference,
         insertParticipant,
@@ -137,7 +166,12 @@ export const DatabaseProvider = ({ children }) => {
         uploadFile,
         deleteAdmin,
         insertUserToFirestore,
-        getUserFromFirestore
+        getUserFromFirestore,
+        wave,
+        getWaves,
+        updateWaveStatus,
+        insertChatMessage,
+        getChat
     }
 
     return (

@@ -8,7 +8,7 @@ import { useConference } from '../context/ConferenceContext';
 import { useDatabase } from '../context/DatabaseContext';
 import ParticipantsWrapper from './Participants/ParticipantsWrapper';
 import MiniConference from './RightPanel/MiniConference';
-import { toTitleCase } from '../util/Utils';
+import { hideLoader, showLoader, toTitleCase } from '../util/Utils';
 
 const Conference = () => {
     const history = useHistory();
@@ -32,11 +32,11 @@ const Conference = () => {
 
     // Send Invite Notification
     useEffect(() => {
-        if (invites) {
+        if (invites && currentUser) {
             Object.keys(invites).forEach(key => {
                 if (invites[key].status === 'NEW') {
                     openInviteNotification(invites[key].name.split('|')[1], key);
-                    updateInvite(currentConference.id, currentUser.uid, key, invites[key].name);
+                    updateInvite(mainConferenceId, currentUser.uid, key, invites[key].name);
                 }
             });
         }
@@ -46,10 +46,20 @@ const Conference = () => {
     // Join Conference
     useEffect(() => {
         if (id || mId) {
+            showLoader();
             const processConference = async () => {
-                const conference = await getConferenceById(mId ? mId : id);
-                setMainConferenceId(id);
-                await joinConference(conference, mId ? true : false);
+                try {
+
+                    const conference = await getConferenceById(mId ? mId : id);
+                    if (conference && conference.id) {
+                        setMainConferenceId(id);
+                        await joinConference(conference, mId ? true : false);
+                    }
+                } catch (e) {
+
+                } finally {
+                    hideLoader();
+                }
             }
             processConference();
         }
@@ -57,7 +67,9 @@ const Conference = () => {
     }, [id, mId]);
 
     const joinMini = async (id) => {
+        showLoader();
         await leaveConference();
+        hideLoader();
         history.push(`/conference/${mainConferenceId}/mini/${id}`);
     }
 
@@ -79,17 +91,18 @@ const Conference = () => {
 
     return (
         <>
-            {mainConferenceId && <>
-                <Header conferenceName={currentConference && toTitleCase(currentConference.alias.split('|')[1])} />
-                <Row>
-                    <Col span={16}>
-                        <ParticipantsWrapper />
-                    </Col>
-                    <Col span={8}>
-                        <RightPanel isAdmin={isAdmin} />
-                    </Col>
-                </Row>
-            </>
+            {currentConference &&
+                <>
+                    <Header conferenceName={currentConference && toTitleCase(currentConference.alias.split('|')[1])} />
+                    <Row>
+                        <Col span={16}>
+                            <ParticipantsWrapper />
+                        </Col>
+                        <Col span={8}>
+                            <RightPanel isAdmin={isAdmin} />
+                        </Col>
+                    </Row>
+                </>
             }
         </>
     )

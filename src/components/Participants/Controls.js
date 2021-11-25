@@ -10,7 +10,7 @@ import './../../styles/controls.scss';
 const Controls = () => {
 
     const { mainConferenceId, isMini, startVideo, stopVideo, startMicrophone, stopMicrophone, leaveConference, currentConference } = useConference();
-    const { deleteParticipant } = useDatabase();
+    const { deleteParticipant, wave } = useDatabase();
     const [videoEnabled, setVideoEnabled] = useState(false);
     const [microphoneEnabled, setMicrophoneEnabled] = useState(true);
     const [disableVideoBtn, setDisableVideoBtn] = useState(false);
@@ -22,9 +22,12 @@ const Controls = () => {
 
 
     const backToMainConference = () => {
-        deleteParticipant(mainConferenceId, currentUser.uid, currentConference.id);
-        history.push(`/conference/${mainConferenceId}`);
-        history.push('/conference/' + mainConferenceId);
+        leaveConference(() => {
+            deleteParticipant(mainConferenceId, currentUser.uid, currentConference.id);
+            history.push(`/conference/${mainConferenceId}`);
+            history.push('/conference/' + mainConferenceId);
+        });
+
     }
 
     const handleStartVideo = async () => {
@@ -66,9 +69,13 @@ const Controls = () => {
                 history.push(`/conference/${mainConferenceId}`);
             } else {
                 deleteParticipant(mainConferenceId, currentUser.uid, null);
-                history.push("/");
+                history.push('/');
             }
         });
+    }
+
+    const waveToAdmin = () => {
+        wave(mainConferenceId, currentConference.id, currentUser.uid, currentUser.displayName);
     }
 
 
@@ -92,6 +99,7 @@ const Controls = () => {
                         </button>
                     </div>
                 </Col>
+                <Col span={8}>{isMini && <Button type="default" className="back-btn" onClick={waveToAdmin}> Wave to admin</Button>}</Col>
             </Row>
         </div>
     )

@@ -2,6 +2,7 @@ import { Alert, Button, Input } from "antd";
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { hideLoader, showLoader } from "../../util/Utils";
 import './../../styles/authentication.scss';
 
 const Signup = () => {
@@ -16,19 +17,30 @@ const Signup = () => {
 
 
     const handleSignup = async () => {
+        if (!email || !displayName || !password || !confirmPassword) {
+            setError('All fields are mandatory');
+            return;
+        }
+        if (password.length < 6) {
+            setError('Password must be atleast 6 letters');
+            return;
+        }
         if (password !== confirmPassword) {
             setError("Passwords do not match!");
             return;
         }
-        try {
-            setError("");
-            await signup(email, password);
-            await updateUserProfile(displayName);
-            history.push("/");
-        } catch (e) {
-            console.log(e);
-            setError("Failed to create an account", e);
-        }
+        showLoader();
+        if (password)
+            try {
+                setError("");
+                await signup(email, password);
+                await updateUserProfile(displayName);
+                history.push("/");
+            } catch (e) {
+                setError("Failed to create an account", e);
+            } finally {
+                hideLoader();
+            }
     };
 
     const gotoLogin = () => {
@@ -53,7 +65,7 @@ const Signup = () => {
                         <Input onChange={(e) => setEmail(e.currentTarget.value)} />
                     </div>
                     <div className="mt-4 custom-label-wrapper">
-                        <label className="custom-label primary" >Enter password<span className="text-danger">* </span></label>
+                        <label className="custom-label primary" >Enter password (Minimum 6 letters)<span className="text-danger">* </span></label>
                         <Input type="password" onChange={e => setPassword(e.currentTarget.value)} />
                     </div>
                     <div className="mt-4 custom-label-wrapper">
@@ -64,8 +76,10 @@ const Signup = () => {
                     <div className="d-flex justify-content-end">
                         <Button type="success" className="filled mt-3" onClick={handleSignup}>Signup</Button>
                     </div>
+                    <div className="my-4 text-center" >
+                        Already have an account? <Button className="d-inline-imp text-link" type="link" onClick={gotoLogin}>Login</Button>
+                    </div>
 
-                    <Button style={{ width: '100%' }} type="link" onClick={gotoLogin}>Already have an account? Login</Button>
                 </div>
 
             </div>

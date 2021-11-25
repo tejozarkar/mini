@@ -1,5 +1,5 @@
 import { TeamOutlined } from '@ant-design/icons'
-import { Button, Col, Drawer, Row } from 'antd'
+import { Button, Col, Drawer, notification, Row } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { useConference } from '../../context/ConferenceContext'
@@ -12,8 +12,8 @@ import ParticipantList from './ParticipantList'
 const ParticipantsWrapper = () => {
 
     const { currentUser } = useAuth();
-    const { allParticipants, totalCurrentParticipants, currentParticipants, streamUpdated, streamAdded, streamRemoved, isMini } = useConference();
-    // const [visibleParticipants, setVisibleParticipants] = useState({});
+    const { allParticipants, totalCurrentParticipants, currentParticipants, streamUpdated, streamAdded, streamRemoved, isMini, currentConference } = useConference();
+    const [visibleParticipants, setVisibleParticipants] = useState({});
     const [showParticipantList, setShowParticipantList] = useState(false);
 
     useEffect(() => {
@@ -36,27 +36,43 @@ const ParticipantsWrapper = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // useEffect(() => {
-    //     console.log('change in participant', currentParticipants);
-    //     Object.keys(currentParticipants).forEach((key) => {
-    //         if (currentParticipants[key].id !== currentUser.uid && currentParticipants[key].active && Object.keys(currentParticipants).length <= 6) {
-    //             setVisibleParticipants(visibleParticipants => ({ ...visibleParticipants, [key]: currentParticipants[key] }));
-    //         }
-    //     });
-    // }, [currentParticipants, currentUser]);
+    useEffect(() => {
+        if (currentParticipants) {
+            setVisibleParticipants({});
+            Object.keys(currentParticipants).forEach((key) => {
+                if (currentParticipants[key].id !== currentUser.uid && currentParticipants[key].active && Object.keys(currentParticipants).length <= 6) {
+                    setVisibleParticipants(visibleParticipants => ({ ...visibleParticipants, [key]: currentParticipants[key] }));
+                }
+            });
+        } else {
+            setVisibleParticipants({});
+        }
+    }, [currentParticipants, currentUser]);
+
+    const handleCopyInviteLink = () => {
+        navigator.clipboard.writeText(currentConference.id);
+        notification.open({
+            description:
+                `Conference Id copied to clipboard`
+
+        });
+    }
 
 
     return (
         <div className="conference-wrapper p-3 pt-0">
             <div className="participants-wrapper p-3">
-                <p className="participants-count d-flex align-items-center"><TeamOutlined /><span style={{ marginLeft: '5px' }}>{totalCurrentParticipants} Participants</span></p>
+                <div className="d-flex justify-content-between">
+                    <p className="participants-count d-flex align-items-center"><TeamOutlined /><span style={{ marginLeft: '5px' }}>{totalCurrentParticipants} Participants</span></p>
+                    <Button type="success" onClick={handleCopyInviteLink}>Copy Conference ID</Button>
+                </div>
                 <div className="mb-4">
                     <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
                         <Col span={6}>
-                            <ParticipantCard key={currentUser.uid} participant={{ id: currentUser.uid, name: 'You', active: true }}></ParticipantCard>
+                            <ParticipantCard key={currentUser.uid} userId={currentUser.uid} participant={{ id: currentUser.uid, name: 'You', active: true }}></ParticipantCard>
                         </Col>
-                        {Object.keys(currentParticipants).map((id) => currentUser.uid !== id && currentParticipants[id].active &&
-                            <Col span={6}><ParticipantCard key={id} participant={currentParticipants[id]}></ParticipantCard></Col>)}
+                        {Object.keys(visibleParticipants).map((id) => currentUser.uid !== id && visibleParticipants[id].active &&
+                            <Col span={6}><ParticipantCard key={id} userId={id} participant={visibleParticipants[id]}></ParticipantCard></Col>)}
                     </Row>
                 </div>
                 <Button className="view-all-participants-btn" type="default" onClick={() => setShowParticipantList(true)}> View all participants</Button>

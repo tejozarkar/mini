@@ -22,7 +22,7 @@ const MiniConferenceTab = () => {
 
     const handleOk = async () => {
         setShowCreateMiniModal(false);
-        const minispace = await createConference('mini|' + miniName + '|' + mainConferenceId, { ttl: 20000 })
+        const minispace = await createConference('mini|' + miniName + '|' + mainConferenceId, { ttl: 2000 })
         insertMini(mainConferenceId, minispace.id, minispace.alias);
     };
 
@@ -55,7 +55,7 @@ const MiniConferenceTab = () => {
                     </Col>
                 )}
             </Row>
-            <Modal key="crateMiniModal" title="Create MiniSpace" visible={showCreateMiniModal} onOk={handleOk} onCancel={handleCancel}>
+            <Modal key="createMiniModal" title="Create MiniSpace" visible={showCreateMiniModal} onOk={handleOk} onCancel={handleCancel}>
                 <div className="custom-label-wrapper">
                     <label className="custom-label">Enter conference name</label>
                     <Input size="large" onChange={e => setMiniName(e.target.value)}></Input>

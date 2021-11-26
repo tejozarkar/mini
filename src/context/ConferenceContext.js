@@ -112,6 +112,8 @@ export const ConferenceProvider = ({ children }) => {
                     setIsMini(isMini);
                     setCurrentConference(conference);
                     resolve();
+                }).catch(e => {
+                    reject(e);
                 });
             }
         });
@@ -159,6 +161,19 @@ export const ConferenceProvider = ({ children }) => {
         callback();
     }
 
+    const startScreenshare = async (callback) => {
+        await VoxeetSDK.conference.startScreenShare(VoxeetSDK.session.participant);
+        callback();
+    }
+
+    const stopScreenshare = async (callback) => {
+        await VoxeetSDK.conference.stopScreenShare(VoxeetSDK.session.participant);
+        callback();
+    }
+
+
+
+
     const value = {
         createConference,
         getConferenceById,
@@ -172,6 +187,8 @@ export const ConferenceProvider = ({ children }) => {
         stopVideo,
         startMicrophone,
         stopMicrophone,
+        startScreenshare,
+        stopScreenshare,
         currentParticipants,
         totalCurrentParticipants,
         isAdmin,

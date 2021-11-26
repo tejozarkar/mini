@@ -2,15 +2,18 @@
 
 .conference-wrapper {
    height: calc(100vh - 85px);
-
-   .participants-wrapper {
+   .outer-wrapper {
       background: $primary-color;
-      height: 90%;
       border-radius: 10px;
-      position: relative;
+      height: 90%;
+      .participants-wrapper {
+         height: 90%;
+         position: relative;
+         overflow: hidden;
+      }
       .view-all-participants-btn {
-         position: absolute;
-         bottom: 15px;
+         margin-top: 10px;
+         margin-left: 10px;
       }
    }
 }

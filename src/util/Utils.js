@@ -1,22 +1,31 @@
 import loaderImg from './../assets/loader.svg';
 
-export const addVideoNode = (participant, stream) => {
-    let participantVideoNode = document.getElementById(`participant-${participant.info.externalId}`);
+export const addVideoNode = (participant, stream, screenshare = false) => {
+    console.log(screenshare);
+    let participantVideoNode = document.getElementById(screenshare ? 'screenshare-video' : `video-${participant.info.externalId}`);
     if (!participantVideoNode) {
         participantVideoNode = document.createElement('video');
-        participantVideoNode.setAttribute('id', 'video-' + participant.id);
-        participantVideoNode.setAttribute('height', '100%');
+        participantVideoNode.setAttribute('id', 'video-' + screenshare ? 'screenshare-video' : participant.id);
+        participantVideoNode.setAttribute('height', 'calc(100% - 200px)');
         participantVideoNode.setAttribute('width', '100%');
         participantVideoNode.setAttribute("playsinline", true);
+        participantVideoNode.setAttribute("overflow", 'hidden');
         participantVideoNode.muted = true;
         participantVideoNode.setAttribute("autoplay", 'autoplay');
-        const participantContainer = document.getElementById(`video-container-${participant.info.externalId}`);
-        participantContainer.classList.add('video');
+        const participantContainer = document.getElementById(screenshare ? 'screenshare' : `video-container-${participant.info.externalId}`);
         if (participantContainer) {
+            participantContainer.classList.add('video');
             participantContainer.appendChild(participantVideoNode);
         }
     }
     navigator.attachMediaStream(participantVideoNode, stream);
+}
+
+export const removeScreenshareNode = () => {
+    const screenshare = document.getElementById('screenshare-video');
+    if (screenshare) {
+        screenshare.remove();
+    }
 }
 
 export const removeVideoNode = (participant) => {

@@ -5,33 +5,51 @@ import { useAuth } from '../../context/AuthContext'
 import { useConference } from '../../context/ConferenceContext'
 import Controls from './Controls'
 import ParticipantCard from './ParticipantCard'
-import { addVideoNode, removeVideoNode } from '../../util/Utils'
+import { addVideoNode, removeScreenshareNode, removeVideoNode } from '../../util/Utils'
 import './../../styles/participants-wrapper.scss';
 import ParticipantList from './ParticipantList'
 
 const ParticipantsWrapper = () => {
 
     const { currentUser } = useAuth();
-    const { allParticipants, totalCurrentParticipants, currentParticipants, streamUpdated, streamAdded, streamRemoved, isMini, currentConference } = useConference();
+    const { totalCurrentParticipants, currentParticipants, streamUpdated, streamAdded, streamRemoved, currentConference } = useConference();
     const [visibleParticipants, setVisibleParticipants] = useState({});
     const [showParticipantList, setShowParticipantList] = useState(false);
+    const [screenshareEnabled, setScreenshareEnabled] = useState(false);
 
     useEffect(() => {
         streamAdded((participant, stream) => {
-            if (stream.getVideoTracks().length) {
-                addVideoNode(participant, stream);
+            if (stream.type === "ScreenShare") {
+                addVideoNode(participant, stream, true);
+                setScreenshareEnabled(true);
+            } else {
+                if (stream.getVideoTracks().length) {
+                    addVideoNode(participant, stream);
+
+                } else {
+                    removeVideoNode(participant);
+                }
             }
         });
         streamUpdated((participant, stream) => {
-
-            if (stream.getVideoTracks().length) {
-                addVideoNode(participant, stream);
-
+            if (stream.type === "ScreenShare") {
+                addVideoNode(participant, stream, true);
+                setScreenshareEnabled(true);
             } else {
-                removeVideoNode(participant);
+                if (stream.getVideoTracks().length) {
+                    addVideoNode(participant, stream);
+
+                } else {
+                    removeVideoNode(participant);
+                }
             }
+
         });
         streamRemoved((participant, stream) => {
+            if (stream.type === "ScreenShare") {
+                setScreenshareEnabled(false);
+                removeScreenshareNode();
+            }
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -61,22 +79,28 @@ const ParticipantsWrapper = () => {
 
     return (
         <div className="conference-wrapper p-3 pt-0">
-            <div className="participants-wrapper p-3">
-                <div className="d-flex justify-content-between">
-                    <p className="participants-count d-flex align-items-center"><TeamOutlined /><span style={{ marginLeft: '5px' }}>{totalCurrentParticipants} Participants</span></p>
-                    <Button type="success" onClick={handleCopyInviteLink}>Copy Conference ID</Button>
-                </div>
-                <div className="mb-4">
-                    <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-                        <Col span={6}>
-                            <ParticipantCard key={currentUser.uid} userId={currentUser.uid} participant={{ id: currentUser.uid, name: 'You', active: true }}></ParticipantCard>
-                        </Col>
-                        {Object.keys(visibleParticipants).map((id) => currentUser.uid !== id && visibleParticipants[id].active &&
-                            <Col span={6}><ParticipantCard key={id} userId={id} participant={visibleParticipants[id]}></ParticipantCard></Col>)}
-                    </Row>
-                </div>
+            <div className="outer-wrapper">
+
+                <div className="participants-wrapper p-3" id="screenshare">
+                    <div className="d-flex justify-content-between">
+                        <p className="participants-count d-flex align-items-center"><TeamOutlined /><span style={{ marginLeft: '5px' }}>{totalCurrentParticipants} Participants</span></p>
+                        <Button type="success" onClick={handleCopyInviteLink}>Copy Conference ID</Button>
+                    </div>
+                    {!screenshareEnabled &&
+                        <div className="mb-4">
+                            <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                                <Col span={6}>
+                                    <ParticipantCard key={currentUser.uid} userId={currentUser.uid} participant={{ id: currentUser.uid, name: 'You', active: true }}></ParticipantCard>
+                                </Col>
+                                {Object.keys(visibleParticipants).map((id) => currentUser.uid !== id && visibleParticipants[id].active &&
+                                    <Col span={6}><ParticipantCard key={id} userId={id} participant={visibleParticipants[id]}></ParticipantCard></Col>)}
+                            </Row>
+                        </div>
+                    }
+                </div >
                 <Button className="view-all-participants-btn" type="default" onClick={() => setShowParticipantList(true)}> View all participants</Button>
-            </div >
+            </div>
+
             <Controls />
 
             <Drawer
@@ -87,9 +111,8 @@ const ParticipantsWrapper = () => {
                 onClose={() => setShowParticipantList(false)}
                 size="Large"
                 key="participantListDrawer">
-                {isMini ?
-                    currentParticipants && Object.keys(currentParticipants).map(key => <ParticipantList userId={key} key={key} participant={currentParticipants[key]} />) :
-                    allParticipants && Object.keys(allParticipants).map(key => <ParticipantList userId={key} key={key} participant={allParticipants[key]} />)
+                {
+                    currentParticipants && Object.keys(currentParticipants).map(key => currentParticipants[key].active && <ParticipantList userId={key} key={key} participant={currentParticipants[key]} />)
                 }
             </Drawer>
         </div >

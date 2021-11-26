@@ -1,6 +1,6 @@
 import { ArrowLeftOutlined, AudioOutlined, LoadingOutlined, PhoneOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import { Button, Col, Row } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useConference } from '../../context/ConferenceContext';
@@ -9,16 +9,28 @@ import './../../styles/controls.scss';
 
 const Controls = () => {
 
-    const { mainConferenceId, isMini, startVideo, stopVideo, startMicrophone, stopMicrophone, leaveConference, currentConference } = useConference();
+    const { streamRemoved, startScreenshare, stopScreenshare, mainConferenceId, isMini, startVideo, stopVideo, startMicrophone, stopMicrophone, leaveConference, currentConference } = useConference();
     const { deleteParticipant, wave } = useDatabase();
     const [videoEnabled, setVideoEnabled] = useState(false);
     const [microphoneEnabled, setMicrophoneEnabled] = useState(true);
+    const [screenshareEnabled, setScreenshareEnabled] = useState(false);
     const [disableVideoBtn, setDisableVideoBtn] = useState(false);
     const [disableMicrophoneBtn, setDisableMicrophoneBtn] = useState(false);
     const [disableEndCallBtn, setDisableEndCallBtn] = useState(false);
+    const [disableScreenshareBtn, setDisableScreenshareBtn] = useState(false);
     const { currentUser } = useAuth();
 
     const history = useHistory();
+
+    useEffect(() => {
+        streamRemoved((participant, stream) => {
+            if (stream.type === "ScreenShare") {
+                setDisableScreenshareBtn(false);
+                setScreenshareEnabled(false);
+            }
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
 
     const backToMainConference = () => {
@@ -27,7 +39,6 @@ const Controls = () => {
             history.push(`/conference/${mainConferenceId}`);
             history.push('/conference/' + mainConferenceId);
         });
-
     }
 
     const handleStartVideo = async () => {
@@ -74,6 +85,21 @@ const Controls = () => {
         });
     }
 
+    const handleScreenshare = () => {
+        setDisableScreenshareBtn(true);
+        if (screenshareEnabled) {
+            stopScreenshare(() => {
+                setDisableScreenshareBtn(false);
+                setScreenshareEnabled(false);
+            });
+        } else {
+            startScreenshare(() => {
+                setDisableScreenshareBtn(false);
+                setScreenshareEnabled(true);
+            });
+        }
+    }
+
     const waveToAdmin = () => {
         wave(mainConferenceId, currentConference.id, currentUser.uid, currentUser.displayName);
     }
@@ -95,6 +121,10 @@ const Controls = () => {
                         </button>
                         <button className={`custom-control ${videoEnabled ? 'active' : ''}`} onClick={handleStartVideo} disabled={disableVideoBtn}>
                             {disableVideoBtn ? <LoadingOutlined style={{ fontSize: '25px' }} /> :
+                                <VideoCameraOutlined size="large" style={{ fontSize: '25px' }} />}
+                        </button>
+                        <button className={`custom-control ${screenshareEnabled ? 'active' : ''}`} onClick={handleScreenshare} disabled={disableScreenshareBtn}>
+                            {disableScreenshareBtn ? <LoadingOutlined style={{ fontSize: '25px' }} /> :
                                 <VideoCameraOutlined size="large" style={{ fontSize: '25px' }} />}
                         </button>
                     </div>

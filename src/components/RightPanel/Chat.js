@@ -1,3 +1,4 @@
+import { SendOutlined } from '@ant-design/icons';
 import { Button, Input } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { useAuth } from '../../context/AuthContext';
@@ -34,7 +35,7 @@ const Chat = () => {
             </div>
             <div className="d-flex justify-content-center align-items-center">
                 <Input className="chat-input" onChange={(e) => setMessage(e.target.value)} value={message} onKeyDown={(e) => e.key === 'Enter' && sendMessage()} placeholder="Type message" />
-                <Button type="success filled" className="h-100" onClick={sendMessage}>Send</Button>
+                <Button type="success filled" className="h-100" onClick={sendMessage}><SendOutlined />Send</Button>
             </div>
 
         </div >

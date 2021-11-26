@@ -9,6 +9,8 @@ import { useDatabase } from '../context/DatabaseContext';
 import ParticipantsWrapper from './Participants/ParticipantsWrapper';
 import MiniConference from './RightPanel/MiniConference';
 import { hideLoader, showLoader, toTitleCase } from '../util/Utils';
+import { ArrowLeftOutlined, WarningOutlined } from '@ant-design/icons';
+import './../styles/conference.scss';
 
 const Conference = () => {
     const history = useHistory();
@@ -16,6 +18,7 @@ const Conference = () => {
     const { getConferenceById, setMainConferenceId, joinConference, isAdmin, leaveConference, mainConferenceId, currentConference } = useConference();
     const { getInvites, updateInvite } = useDatabase();
     const [invites, setInvites] = useState();
+    const [conferenceNotExists, setConferenceNotExists] = useState(false);
     const { id, mId } = useParams();
 
     // Receive Invites
@@ -49,14 +52,15 @@ const Conference = () => {
             showLoader();
             const processConference = async () => {
                 try {
-
                     const conference = await getConferenceById(mId ? mId : id);
-                    if (conference && conference.id) {
+                    if (conference) {
+                        setConferenceNotExists(false);
                         setMainConferenceId(id);
                         await joinConference(conference, mId ? true : false);
+
                     }
                 } catch (e) {
-
+                    setConferenceNotExists(true);
                 } finally {
                     hideLoader();
                 }
@@ -89,11 +93,22 @@ const Conference = () => {
         });
     };
 
+    const handleBackHome = () => {
+        history.push('/');
+    }
+
     return (
         <>
-            {currentConference &&
+            <Header conferenceName={currentConference && toTitleCase(currentConference.alias.split('|')[1])} />
+            {conferenceNotExists ?
+                <div className="no-conference-wrap d-flex align-items-center justify-content-center flex-column">
+                    <WarningOutlined className="warning-icon mb-3" />
+                    <h5 className="mb-4">Conference doesn't exists</h5>
+                    <Button type="default filled" onClick={handleBackHome}> <ArrowLeftOutlined />Back to Home</Button>
+                </div> :
+                currentConference &&
                 <>
-                    <Header conferenceName={currentConference && toTitleCase(currentConference.alias.split('|')[1])} />
+
                     <Row>
                         <Col span={16}>
                             <ParticipantsWrapper />

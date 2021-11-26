@@ -1,0 +1,8 @@
+@import "./variables.scss";
+.no-conference-wrap {
+   height: calc(100vh - 150px);
+   .warning-icon {
+      font-size: 6em;
+      color: $error-color;
+   }
+}

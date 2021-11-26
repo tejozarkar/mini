@@ -24,7 +24,7 @@ const Home = () => {
 
     const handleCreateConference = async () => {
         showLoader();
-        const conference = await createConference(currentUser.uid + '|' + conferenceName, { ttl: 1000 }, currentUser);
+        const conference = await createConference(currentUser.uid + '|' + conferenceName, { ttl: 3600 }, currentUser);
         insertMainConference(conference.id, conference.alias, currentUser);
         hideLoader();
         history.push('/conference/' + conference.id);

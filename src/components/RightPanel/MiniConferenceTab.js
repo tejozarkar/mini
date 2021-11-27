@@ -22,6 +22,7 @@ const MiniConferenceTab = () => {
 
     const handleOk = async () => {
         setShowCreateMiniModal(false);
+        setMiniName('');
         const minispace = await createConference('mini|' + miniName + '|' + mainConferenceId, { ttl: 2000 })
         insertMini(mainConferenceId, minispace.id, minispace.alias);
     };

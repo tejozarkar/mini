@@ -49,6 +49,8 @@ const ParticipantsWrapper = () => {
             if (stream.type === "ScreenShare") {
                 setScreenshareEnabled(false);
                 removeScreenshareNode();
+            } else {
+                removeVideoNode();
             }
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps

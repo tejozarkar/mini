@@ -56,25 +56,25 @@ const MiniConference = ({ name, miniId }) => {
         });
     }
 
-    const avoidWave = () => {
-        updateWaveStatus(mainConferenceId, miniId, 'REJECT')
+    const changeWaveStatus = (status = 'REJECTED') => {
+        updateWaveStatus(mainConferenceId, miniId, status)
     }
 
     const openWaveNotification = (personName) => {
         const key = `open${Date.now()}`;
         const btn = (
-            <Button type="primary" size="small" onClick={() => { notification.close(key); joinMini(miniId); }}>
+            <Button type="primary" size="small" onClick={() => { notification.close(key); joinMini(miniId); changeWaveStatus('ACCEPTED') }}>
                 Join
             </Button>
         );
         notification.open({
             message: `👋 ${personName} is waving you `,
             description:
-                `${name.split('|')[1]} requires your attention. Would you like to join?`,
+                `${name && toTitleCase(name.split('|')[1])} requires your attention. Would you like to join?`,
             btn,
             duration: 0,
             key,
-            onClose: avoidWave
+            onClose: changeWaveStatus
         });
     };
 

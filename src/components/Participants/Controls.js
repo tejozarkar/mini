@@ -1,4 +1,4 @@
-import { ArrowLeftOutlined, AudioOutlined, LoadingOutlined, PhoneOutlined, VideoCameraOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, AudioOutlined, DesktopOutlined, LoadingOutlined, PhoneOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import { Button, Col, Row } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -125,7 +125,7 @@ const Controls = () => {
                         </button>
                         <button className={`custom-control ${screenshareEnabled ? 'active' : ''}`} onClick={handleScreenshare} disabled={disableScreenshareBtn}>
                             {disableScreenshareBtn ? <LoadingOutlined style={{ fontSize: '25px' }} /> :
-                                <VideoCameraOutlined size="large" style={{ fontSize: '25px' }} />}
+                                <DesktopOutlined size="large" style={{ fontSize: '25px' }} />}
                         </button>
                     </div>
                 </Col>

@@ -96,6 +96,9 @@ const Controls = () => {
             startScreenshare(() => {
                 setDisableScreenshareBtn(false);
                 setScreenshareEnabled(true);
+                if (videoEnabled) {
+                    handleStartVideo();
+                }
             });
         }
     }

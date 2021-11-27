@@ -1,11 +1,10 @@
 import loaderImg from './../assets/loader.svg';
 
 export const addVideoNode = (participant, stream, screenshare = false) => {
-    console.log(screenshare);
     let participantVideoNode = document.getElementById(screenshare ? 'screenshare-video' : `video-${participant.info.externalId}`);
     if (!participantVideoNode) {
         participantVideoNode = document.createElement('video');
-        participantVideoNode.setAttribute('id', 'video-' + screenshare ? 'screenshare-video' : participant.id);
+        participantVideoNode.setAttribute('id', 'video-' + (screenshare ? 'screenshare' : participant.id));
         participantVideoNode.setAttribute('height', 'calc(100% - 200px)');
         participantVideoNode.setAttribute('width', '100%');
         participantVideoNode.setAttribute("playsinline", true);
@@ -22,7 +21,7 @@ export const addVideoNode = (participant, stream, screenshare = false) => {
 }
 
 export const removeScreenshareNode = () => {
-    const screenshare = document.getElementById('screenshare-video');
+    const screenshare = document.getElementById('video-screenshare');
     if (screenshare) {
         screenshare.remove();
     }

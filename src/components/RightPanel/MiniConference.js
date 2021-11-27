@@ -20,7 +20,6 @@ const MiniConference = ({ name, miniId }) => {
     useEffect(() => {
         getWaves(mainConferenceId, miniId, (snapshot) => {
             if (snapshot && snapshot.val()) {
-                console.log(snapshot.val())
                 if (snapshot.val().status === 'NEW') {
                     if (isWaving === false)
                         openWaveNotification(snapshot.val().name)

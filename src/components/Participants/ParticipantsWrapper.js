@@ -24,7 +24,7 @@ const ParticipantsWrapper = () => {
                 setScreenshareEnabled(true);
             } else {
                 if (stream.getVideoTracks().length) {
-                    addVideoNode(participant, stream);
+                    addVideoNode(participant, stream, false);
 
                 } else {
                     removeVideoNode(participant);
@@ -37,7 +37,7 @@ const ParticipantsWrapper = () => {
                 setScreenshareEnabled(true);
             } else {
                 if (stream.getVideoTracks().length) {
-                    addVideoNode(participant, stream);
+                    addVideoNode(participant, stream, false);
 
                 } else {
                     removeVideoNode(participant);
@@ -50,7 +50,7 @@ const ParticipantsWrapper = () => {
                 setScreenshareEnabled(false);
                 removeScreenshareNode();
             } else {
-                removeVideoNode();
+                removeVideoNode(participant);
             }
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps

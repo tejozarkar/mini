@@ -21,7 +21,6 @@ const Chat = () => {
     }
 
     useEffect(() => {
-        console.log('is mini', isMini);
         getChat(mainConferenceId, isMini ? currentConference.id : null, (snapshot) => {
             setChat(snapshot.val());
         });

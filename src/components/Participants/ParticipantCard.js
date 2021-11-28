@@ -10,7 +10,7 @@ const ParticipantCard = ({ participant, userId }) => {
     return (
         <>
             {participant &&
-                <div className="participant-card p-3 m-auto d-flex justify-content-center align-items-center" style={{ background: (participant && participant.name) ? getAlphabetColor(participant.name[0]) : '#63B4B8' }} id={`video-container-${participant.id}`}>
+                <div className="participant-card mb-3 p-3 m-auto d-flex justify-content-center align-items-center" style={{ background: (participant && participant.name) ? getAlphabetColor(participant.name[0]) : '#63B4B8' }} id={`video-container-${participant.id}`}>
                     <p style={{ marginBottom: '0', fontSize: '2em' }}>{toTitleCase(participant.name)}</p>
                     <div className="overlay px-2 py-1">
                         {toTitleCase(participant.name)}

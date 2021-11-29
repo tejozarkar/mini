@@ -53,7 +53,7 @@ const Home = () => {
                                         <Input className="mb-3" type='text' onChange={(e) => setConferenceName(e.target.value)} />
                                     </div>
                                     <div className="d-flex justify-content-end">
-                                        <Button type="success filled" onClick={handleCreateConference}>Create</Button>
+                                        <Button type="success filled" disabled={!conferenceName || conferenceName === ''} onClick={handleCreateConference}>Create</Button>
                                     </div>
                                 </div>
                             </Col>
@@ -66,7 +66,7 @@ const Home = () => {
                                         <Input className="mb-3" type='text' onChange={(e) => setConferenceId(e.target.value)} />
                                     </div>
                                     <div className="d-flex justify-content-end">
-                                        <Button type="default filled" onClick={handleJoinConference}>Join</Button>
+                                        <Button type="default filled" disabled={!conferenceId || conferenceId === ''} onClick={handleJoinConference}>Join</Button>
                                     </div>
                                 </div>
                             </Col>
